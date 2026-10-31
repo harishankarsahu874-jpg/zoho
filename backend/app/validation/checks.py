@@ -70,15 +70,18 @@ def booking_report(ctx, base_assign: dict, fest: dict) -> dict:
 
 
 def sessions_week_grid(ctx, assign: dict) -> dict:
-    """{f'{day}|P{p}': [session_id, ...]} teaching grid."""
+    """{f'{day}|P{p}': [{sid, room, dur, kind}, ...]} teaching grid (occupancy)."""
     grid: dict[str, list] = {}
     for sid, (day, start, room) in assign.items():
         meta = ctx.sessions.get(sid)
         if meta is None:
             continue
         dur = int(meta.get("duration", 1) or 1)
+        kind = "lab" if str(meta.get("kind", "")).startswith("practical") \
+            or str(meta.get("kind", "")).endswith("lab") else "lecture"
         for p in range(start, start + dur):
-            grid.setdefault(f"{day}|P{p}", []).append(sid)
+            grid.setdefault(f"{day}|P{p}", []).append(
+                {"sid": sid, "room": room, "dur": dur, "kind": kind})
     return grid
 
 

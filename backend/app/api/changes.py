@@ -87,7 +87,9 @@ def list_changes(db: Session = Depends(get_db), _user=Depends(get_current_user))
                         "infeasible": p.get("infeasible", False),
                         "reason": p.get("reason"),
                         "stability": p.get("stability"),
+                        "moved_from": p.get("moved_from"),
                         "soft_total": (p.get("report") or {}).get("soft_total"),
+                        "hard_count": (p.get("report") or {}).get("hard_violation_count"),
                     }})
     return {"changes": out}
 

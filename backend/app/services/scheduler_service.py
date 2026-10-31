@@ -186,7 +186,7 @@ def propose_change(db: Session, changes: list[dict],
         assign = assign_of(sched)
         _attach_manuals(sched["fest_week"], approved, ctx, assign)
         return {"schedule": sched, "stability": {"sessions_moved": 0},
-                "report": report, "infeasible": False}
+                "moved_from": {}, "report": report, "infeasible": False}
     sched, report, meta = build_schedule_after(ctx, baseline, team,
                                                time_limit=time_limit,
                                                extra_busy=frozenset(reserve),
@@ -200,8 +200,13 @@ def propose_change(db: Session, changes: list[dict],
     if report["hard_violation_count"]:
         raise RuntimeError("repair failed validation: "
                            f"{report['hard_violations'][:5]}")
+    moved_from = {
+        e["session_id"]: (e["day"], e["start_period"], e["room_id"])
+        for e in baseline.get("sessions", [])
+        if e["session_id"] in (report.get("stability", {}).get("moved_ids") or [])
+    }
     return {"schedule": sched, "stability": report.get("stability", {}),
-            "report": report, "infeasible": False}
+            "moved_from": moved_from, "report": report, "infeasible": False}
 
 
 def apply_change(db: Session, changes: list[dict]) -> None:

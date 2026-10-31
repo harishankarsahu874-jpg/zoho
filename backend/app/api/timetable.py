@@ -106,4 +106,7 @@ def reference(db: Session = Depends(get_db), _user=Depends(get_current_user)):
                       "faculty": s.get("faculty_id"), "size": s["size"],
                       "duration": s.get("duration", 1)}
                      for s in ctx.data["sessions"]],
+        "exams": [{"id": e["id"], "course_ids": e.get("course_ids", []),
+                   "groups": e.get("groups", []), "size": e.get("size")}
+                  for e in ctx.data.get("exams", [])],
     }
