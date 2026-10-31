@@ -1,248 +1,399 @@
-// TESSERA Overview — the editorial command centre.
-// Big serif statement, live stats, today's tiles, featured spaces,
-// real activity (audit log) and alerts.
-import React, { useEffect, useMemo, useState } from 'react'
+// TESSERA Overview — the week board.
+// Calendar-style dashboard (month / week / day): a live time-grid of the
+// solver-composed week, colourful session tiles, reservations, and a
+// floating "New booking" composer that creates a real PENDING request.
+// All schedule data is backend-validated (/reference + /timetable?view=week).
+import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Hero, useData } from '../App.jsx'
+import { getUser } from '../api.js'
+import { useData, useToast } from '../App.jsx'
 import * as S from '../services.jsx'
 import { TesseraEmpty } from '../tessera.jsx'
-import { Tessera } from '../tessera.jsx'
 import * as I from '../icons.jsx'
 import { INSTITUTE, FEST_WEEK, ROOMS } from '../data/campus.js'
-const roomById = S.roomById
 
-const DAY_FULL = { MON: 'Monday', TUE: 'Tuesday', WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday' }
-function todayIdx(days = ['MON', 'TUE', 'WED', 'THU', 'FRI']) {
-  const now = new Date().getDay() // 0 Sun .. 6 Sat
-  const map = { 1: 'MON', 2: 'TUE', 3: 'WED', 4: 'THU', 5: 'FRI' }
-  const d = map[now]
-  return days.includes(d) ? days.indexOf(d) : 0
+const ROLE_CAP = { admin: 'institute_event', faculty: 'guest_lecture', department_coordinator: 'department_event', club: 'club_event' }
+const CAT_LABEL = { club_event: 'Club event', department_event: 'Department event', guest_lecture: 'Guest lecture', institute_event: 'Institute event' }
+
+// TESSERA palette tints as calendar category colours
+const KIND_STYLE = {
+  lecture: { k: 'lec', chip: 'Lecture' },
+  lab: { k: 'lab', chip: 'Lab' },
+  tutorial: { k: 'tut', chip: 'Tutorial' },
+  exam: { k: 'exam', chip: 'Exam' },
+}
+const kindKey = (k) => (KIND_STYLE[k] ? KIND_STYLE[k].k : 'o')
+
+// 08:00 → 21:00 in hour bands; band 5 = the 13:00–14:00 lunch break
+const BANDS = 14
+const BAND_H = 46
+const bandOf = (p) => (p <= 5 ? p - 1 : p)
+const boundHour = (b) => (b <= 4 ? 8 + b : b === 5 ? 13 : 7 + b)
+
+const DOW = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+const DOW_FULL = { MON: 'Monday', TUE: 'Tuesday', WED: 'Wednesday', THU: 'Thursday', FRI: 'Friday', SAT: 'Saturday', SUN: 'Sunday' }
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+function weekDates(anchor) {
+  const d = new Date(anchor)
+  const dow = (d.getDay() + 6) % 7 // Monday = 0
+  const mon = new Date(d); mon.setDate(d.getDate() - dow)
+  return Array.from({ length: 7 }, (_, i) => { const x = new Date(mon); x.setDate(mon.getDate() + i); return x })
+}
+function monthCells(anchor) {
+  const y = anchor.getFullYear(), m = anchor.getMonth()
+  const first = new Date(y, m, 1)
+  const start = new Date(first); start.setDate(1 - ((first.getDay() + 6) % 7))
+  return Array.from({ length: 42 }, (_, i) => { const d = new Date(start); d.setDate(start.getDate() + i); return d })
+}
+const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+
+// greedy interval lanes for one day column
+function layOut(items, maxLanes) {
+  const laneEnds = []
+  const placed = []
+  for (const it of items) {
+    let lane = laneEnds.findIndex((e) => e < it.start)
+    if (lane === -1) { lane = laneEnds.length; laneEnds.push(it.end) } else laneEnds[lane] = it.end
+    placed.push({ ...it, lane })
+  }
+  return placed.map((o) => ({ ...o, overflow: o.lane >= maxLanes }))
 }
 
-const ACTION_TXT = {
-  'booking.created': (d) => `booking request “${d.title}” submitted`,
-  'booking.decided': (d) => `booking ${d.request_id} decided (${d.status})`,
-  'change.submitted': (d) => `change request #${d.change_id} submitted`,
-  'change.decided': (d) => `change #${d.change_id} ${d.status}`,
-  'ai.ask': (d) => `asked the assistant: “${(d.question || '').slice(0, 60)}”`,
-  'ai.change_requested': (d) => `AI-parsed change #${d.change_id} recorded`,
-  'admin.generate': () => 'timetable generated',
-  'admin.export': () => 'schedule exported',
-  'admin.reset': () => 'demo data reset',
-  'admin.priority': () => 'priority order updated',
+function DayColumn({ day, items, maxLanes, detailed }) {
+  const laid = useMemo(() => layOut(items, maxLanes), [items, maxLanes])
+  const shown = laid.filter((l) => !l.overflow)
+  const lanes = Math.max(1, ...shown.map((l) => l.lane + 1), 0) || 1
+  const w = 100 / lanes
+  const overflows = laid.filter((l) => l.overflow)
+  const pillAt = overflows.length ? bandOf(Math.min(...overflows.map((o) => o.start))) : null
+  const weekend = day === 'SAT' || day === 'SUN'
+
+  return (
+    <div className={`ovc-col${weekend ? ' ovc-we' : ''}`}>
+      {overflows.length > 0 && (
+        <Link to={`/board?day=${day}`} className="ovc-more mono" style={{ top: pillAt * BAND_H + 2 }} title={`${overflows.length} more sessions in this slot — open the Mosaic Board`}>
+          +{overflows.length} more
+        </Link>
+      )}
+      {shown.map((it) => {
+        const top = bandOf(it.start) * BAND_H + 2
+        const h = (bandOf(it.end) - bandOf(it.start) + 1) * BAND_H - 4
+        if (it.kind === 'booking') {
+          return (
+            <Link to="/bookings" key={it.id} className="ovc-blk ovc-bk" style={{ top, height: h, left: `${it.lane * w}%`, width: `calc(${w}% - 3px)` }}
+              title={`Reservation ${it.rid} · ${it.room}`}>
+              <span className="ovc-blk-t">Reservation</span>
+              <span className="ovc-blk-tm mono">{S.periodTime(it.start)[0].slice(0, 5)}–{S.periodTime(it.end)[1].slice(0, 5)}</span>
+              {h > 52 && <span className="ovc-blk-r mono">{it.rid}</span>}
+            </Link>
+          )
+        }
+        const kk = kindKey(it.kind)
+        const meta = it.meta || {}
+        const fac = meta.faculty ? S.facById[meta.faculty] : null
+        const course = S.courseOf(it.sid) || it.sid
+        const tall = h >= 60
+        return (
+          <Link to={`/board?session=${it.sid}`} key={it.id} className={`ovc-blk ovc-k-${kk}`} style={{ top, height: h, left: `${it.lane * w}%`, width: `calc(${w}% - 3px)` }}
+            title={`${course} · ${DOW_FULL[it.day]} P${it.start}–P${it.end} · ${it.room}${fac ? ' · ' + fac.name : ''}`}>
+            <span className="ovc-blk-t">{course}</span>
+            <span className="ovc-blk-tm mono">
+              {S.periodTime(it.start)[0].slice(0, 5)}–{S.periodTime(it.end)[1].slice(0, 5)}
+              {detailed ? ` · P${it.start}–P${it.end}` : it.end === it.start ? ` · P${it.start}` : ''}
+            </span>
+            {h > 52 && <span className={`ovc-blk-r mono${detailed ? ' ful' : ''}`}>{it.room}</span>}
+            {detailed && (
+              <span className="ovc-blk-meta">
+                {fac && <span className="ovc-blk-fac">{fac.name}</span>}
+                {(meta.groups || []).map((g) => <span key={g} className="chip">{g}</span>)}
+              </span>
+            )}
+            {tall && !detailed && fac && <span className="ovc-ava mono" title={fac.name}>{S.initials(fac.name)}</span>}
+          </Link>
+        )
+      })}
+      {weekend && <span className="ovc-we-label mono">off</span>}
+    </div>
+  )
+}
+
+function AddBookingCard({ onClose, onDone }) {
+  const user = getUser()
+  const toast = useToast()
+  const [title, setTitle] = useState('')
+  const [day, setDay] = useState('FRI')
+  const [from, setFrom] = useState(10)
+  const [to, setTo] = useState(11)
+  const [room, setRoom] = useState('SH-1')
+  const [cat, setCat] = useState(ROLE_CAP[user?.role] || 'club_event')
+  const [att, setAtt] = useState(60)
+  const [busy, setBusy] = useState(false)
+
+  const rm = S.roomById[room]
+  const submit = async () => {
+    if (to < from) { toast('End period must be after the start period.', 'err'); return }
+    setBusy(true)
+    try {
+      const res = await S.postBooking({
+        title: title.trim() || 'Untitled event',
+        role: user?.role || 'club',
+        requested_category: cat,
+        attendance: +att || 60,
+        duration_periods: to - from + 1,
+        windows: [{ day, from_period: from, to_period: to }],
+        room_types: [rm?.type || 'classroom'],
+        needs: [],
+        requested_room: room,
+        mandatory_for_groups: [],
+        notes: '',
+      })
+      toast(`${res.message || 'Request recorded.'} It is PENDING — a coordinator or admin will decide it.`)
+      onDone()
+    } catch (e) {
+      toast(typeof e.detail === 'string' ? e.detail : e.detail?.problems?.join?.('; ') || e.message, 'err')
+    } finally { setBusy(false) }
+  }
+
+  const pOpt = (v) => <option key={v} value={v}>P{v} · {S.periodTime(v)[0].slice(0, 5)}</option>
+
+  return (
+    <div className="ovc-add">
+      <button className="ovc-add-x" onClick={onClose} title="Close"><I.XMark size={13} /></button>
+      <input className="input ovc-add-title" placeholder="e.g. Makers’ Club demo workshop" value={title}
+        onChange={(e) => setTitle(e.target.value)} maxLength={80} />
+
+      <div className="ovc-ard">
+        <span className="ovc-ard-ic"><I.Calendar size={13} /></span>
+        <select className="input ovc-sel" value={day} onChange={(e) => setDay(e.target.value)}>
+          {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((d) => <option key={d} value={d}>{DOW_FULL[d]}</option>)}
+        </select>
+      </div>
+      <div className="ovc-ard">
+        <span className="ovc-ard-ic"><I.Clock size={13} /></span>
+        <select className="input ovc-sel" value={from} onChange={(e) => { const f = +e.target.value; setFrom(f); if (to <= f) setTo(Math.min(13, f + 1)) }}>
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(pOpt)}
+        </select>
+        <span className="muted">–</span>
+        <select className="input ovc-sel" value={to} onChange={(e) => setTo(+e.target.value)}>
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].filter((v) => v > from).map(pOpt)}
+        </select>
+      </div>
+      <div className="ovc-ard">
+        <span className="ovc-ard-ic"><I.Pin size={13} /></span>
+        <select className="input ovc-sel" value={room} onChange={(e) => setRoom(e.target.value)}>
+          {ROOMS.map((r) => <option key={r.id} value={r.id}>{r.id} · {r.name} ({r.capacity})</option>)}
+        </select>
+      </div>
+
+      <div className="row wrap" style={{ gap: 6 }}>
+        {Object.keys(CAT_LABEL).map((c) => (
+          <button key={c} type="button" className={`chip${cat === c ? ' on' : ''}`} onClick={() => setCat(c)}>{CAT_LABEL[c]}</button>
+        ))}
+      </div>
+
+      <div className="ovc-ard" style={{ marginTop: 10 }}>
+        <span className="mono" style={{ fontSize: 10.5, color: 'var(--ink-3)' }}>P{from}–P{to} · {S.periodTime(from)[0].slice(0, 5)}–{S.periodTime(to)[1].slice(0, 5)} · ~</span>
+        <input className="input ovc-att" type="number" min={1} max={800} value={att} onChange={(e) => setAtt(+e.target.value)} title="Expected attendance" />
+        <span className="muted small">attending</span>
+      </div>
+
+      <div className="row ovc-add-f">
+        <button className="btn dark" disabled={busy} onClick={submit}>{busy ? 'Submitting…' : 'Add booking'}</button>
+        <Link to="/bookings" className="ovc-dots" title="Open the full booking composer">···<span>full composer</span></Link>
+      </div>
+      <div className="ovc-add-note">Creates a <b>PENDING</b> request — a coordinator or admin decides it. It is not an approved booking until then.</div>
+    </div>
+  )
 }
 
 export default function Overview() {
   const data = useData()
   const dash = data?.dashboard
-  const [audit, setAudit] = useState(null)
-  const [err, setErr] = useState(null)
+  const [view, setView] = useState('week')
+  const [anchor, setAnchor] = useState(() => new Date())
+  const [selDay, setSelDay] = useState(() => {
+    const d = (new Date().getDay() + 6) % 7
+    return DOW[d] && DOW[d] !== 'SUN' ? DOW[d] : 'MON'
+  })
+  const [addOpen, setAddOpen] = useState(true)
 
-  useEffect(() => {
-    S.adminAudit(14).then((r) => setAudit(r.entries || [])).catch((e) => setErr(e.message))
-  }, [])
+  const today = new Date()
+  const week = weekDates(anchor)
+  const todayDow = DOW[(today.getDay() + 6) % 7]
 
-  const tIdx = todayIdx(data?.ref?.days)
-  const day = data?.ref?.days?.[tIdx]
+  const byDay = useMemo(() => {
+    const m = {}
+    for (const d of DOW) m[d] = []
+    for (const p of data?.placements || []) {
+      m[p.day]?.push({ id: 's' + p.session_id, kind: p.kind || 'lecture', start: p.start, end: p.end,
+        day: p.day, sid: p.session_id, room: p.room, meta: S.sessMetaOf(p.session_id) || {} })
+    }
+    for (const b of data?.festBookings || []) {
+      m[b.day]?.push({ id: 'b' + b.request_id, kind: 'booking', start: b.start, end: b.end,
+        day: b.day, room: b.room, rid: b.request_id })
+    }
+    for (const d of DOW) m[d].sort((a, b) => a.start - b.start || a.id.localeCompare(b.id))
+    return m
+  }, [data?.placements, data?.festBookings])
 
-  const todays = useMemo(() =>
-    (data?.placements || []).filter((p) => p.day === day)
-      .sort((a, b) => a.start - b.start), [data?.placements, day])
+  const counts = useMemo(() => {
+    const perDay = {}
+    for (const d of DOW) perDay[d] = (data?.placements || []).filter((p) => p.day === d).length
+    return perDay
+  }, [data?.placements])
 
-  const featured = useMemo(() => [
-    { room: roomById['AUD'], img: 'img/auditorium.jpg', tag: 'Institute events', cap: 500 },
-    { room: ROOMS.find(r => r.id === 'LAB-CS') || roomById['LAB-CS'] || ROOMS[8], img: 'img/lab-cs.jpg', tag: 'Teaching labs', cap: 40 },
-    { room: roomById['SEM-1'] || ROOMS.find(r => r.type === 'seminar_hall') || ROOMS[0], img: 'img/seminar.jpg', tag: 'Seminars & talks', cap: 120 },
-  ], [])
-
-  const hard = dash?.conflicts?.hard
-  const soft = dash?.soft_penalty
-  const util = dash?.room_utilisation?.overall
-  const bstat = dash?.bookings
-
-  if (data?.loading) return <TesseraEmpty title="Composing the mosaic" sub="Fetching live schedule data…" />
+  if (data?.loading) return <TesseraEmpty title="Composing the week" sub="Fetching the live schedule…" />
   if (data?.error) return <TesseraEmpty title="Could not load data" sub={data.error} />
+
   if (!dash?.timetable_generated) {
     return (
-      <div>
-        <Hero eyebrow={`${INSTITUTE} · ${FEST_WEEK}`}
-          title={<>Spaces, people and time — <em>not in sync yet.</em></>}
-          sub="No timetable has been generated for this period. An admin can compose one from Reports & Analytics." />
-        <div className="card"><TesseraEmpty title="Awaiting the first solve"
-          sub="Use Reports & Analytics → Generate (admin) to run the solver." /></div>
+      <div className="ovc">
+        <div className="ovc-head">
+          <div>
+            <div className="ovc-month">The week is <em>not composed yet.</em></div>
+            <div className="ovc-sub">{INSTITUTE} · {FEST_WEEK}</div>
+          </div>
+        </div>
+        <div className="card">
+          <TesseraEmpty title="Awaiting the first solve"
+            sub="No timetable has been generated for this period. An admin can compose one from Reports & Analytics." />
+          <Link to="/reports" className="btn sm"><I.Bolt size={14} /> Reports & Analytics</Link>
+        </div>
       </div>
     )
   }
 
+  // ---------- titles
+  const mon = week[0], sun = week[6]
+  const dayDate = week[DOW.indexOf(selDay)]
+  let title
+  if (view === 'day') {
+    title = <>{sameDay(dayDate, today) ? <em>Today</em> : DOW_FULL[selDay]}, {dayDate.getDate()} {MONTHS[dayDate.getMonth()].slice(0, 3)}, {dayDate.getFullYear()}</>
+  } else if (mon.getMonth() === sun.getMonth()) {
+    title = <>{MONTHS[mon.getMonth()]}, {mon.getFullYear()}</>
+  } else {
+    title = <>{MONTHS[mon.getMonth()].slice(0, 3)} – {MONTHS[sun.getMonth()]}, {sun.getFullYear()}</>
+  }
+  const sub = view === 'day'
+    ? <>{DOW_FULL[selDay]} · recurring teaching week · {dash.counts?.sessions} sessions</>
+    : <>{dash.counts?.sessions} sessions · {dash.counts?.rooms} rooms · {dash.counts?.faculty} faculty · hard {dash.conflicts?.hard ?? '—'} · soft {dash.soft_penalty ?? '—'}</>
+
+  const shift = (n) => setAnchor((a) => {
+    const x = new Date(a)
+    if (view === 'month') x.setMonth(x.getMonth() + n)
+    else x.setDate(x.getDate() + n * 7)
+    return x
+  })
+
+  const strip = (
+    <div className="ovc-cardhead">
+      <div className="ovc-corner mono" />
+      {DOW.map((d, i) => {
+        const dt = week[i]
+        const isToday = sameDay(dt, today)
+        const active = view === 'day' && selDay === d
+        return (
+          <button key={d} className={`ovc-day${isToday ? ' today' : ''}${active ? ' on' : ''}${d === 'SAT' || d === 'SUN' ? ' we' : ''}`}
+            onClick={() => { setSelDay(d); setView('day') }} title={DOW_FULL[d]}>
+            <span className="ovc-day-n">{d.slice(0, 3)}</span>
+            <span className="ovc-day-d mono">{dt.getDate()}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+
+  const grid = (days, maxLanes, detailed) => (
+    <div className="ovc-grid" style={{ gridTemplateColumns: `56px repeat(${days.length}, minmax(0, 1fr))` }}>
+      <div className="ovc-rail" style={{ height: BANDS * BAND_H }}>
+        {Array.from({ length: BANDS + 1 }, (_, b) => (
+          <span key={b} className="ovc-rail-t mono" style={{ top: b * BAND_H - 7 }}>{String(boundHour(b)).padStart(2, '0')}:00</span>
+        ))}
+      </div>
+      {days.map((d) => <DayColumn key={d} day={d} items={byDay[d] || []} maxLanes={maxLanes} detailed={detailed} />)}
+    </div>
+  )
+
   return (
-    <div>
-      <Hero eyebrow={
-        <span className="row" style={{ gap: 10 }}>
-          <span className="live"><i /> LIVE</span> {INSTITUTE} · {FEST_WEEK}
-        </span>}
-        title={<>Spaces, people and time — <em>in sync.</em></>}
-        sub={`The week is composed by the solver and validated against every hard constraint. Live state of the campus mosaic: ${dash.counts?.sessions} sessions across ${dash.counts?.rooms} rooms, ${dash.counts?.faculty} faculty on roster.`}
-      >
-        <div className="hero-meta">
-          <div className="hmeta"><span className="hk">Sessions</span><span className="hv">{dash.counts?.sessions} scheduled</span></div>
-          <div className="hmeta"><span className="hk">Rooms</span><span className="hv">{dash.counts?.rooms} mapped</span></div>
-          <div className="hmeta"><span className="hk">Faculty</span><span className="hv">{dash.counts?.faculty} on roster</span></div>
-          <div className="hmeta"><span className="hk">Decisions waiting</span>
-            <span className="hv" style={{ color: (dash.pending?.bookings || 0) + (dash.pending?.changes || 0) ? 'var(--coral-deep)' : undefined }}>
-              {(dash.pending?.bookings || 0) + (dash.pending?.changes || 0)}
-            </span></div>
+    <div className="ovc">
+      {/* header — serif month, view toggle, nav */}
+      <div className="ovc-head">
+        <div>
+          <div className="ovc-month">{title}</div>
+          <div className="ovc-sub">
+            <span className="live"><i /> LIVE</span>
+            <span style={{ display: 'inline-block', width: 14 }} />
+            {sub}
+          </div>
         </div>
-      </Hero>
-
-      {/* KPI strip — operational */}
-      <div className="grid cols-4 mb">
-        <div className="stat sage">
-          <div className="bignum">{hard ?? '—'}</div>
-          <div className="statlabel">Hard conflicts</div>
-          <div className="statnote">{hard === 0 ? 'fully constraint-valid' : 'review required'}</div>
-        </div>
-        <div className="stat violet">
-          <div className="bignum">{soft ?? '—'}<span className="unit"> pts</span></div>
-          <div className="statlabel">Soft penalties</div>
-          <div className="statnote">preference-level only</div>
-        </div>
-        <div className="stat sky">
-          <div className="bignum">{bstat?.score ?? '—'}<span className="unit">/{bstat?.max_score ?? 70}</span></div>
-          <div className="statlabel">Booking score</div>
-          <div className="statnote">{bstat?.approved ?? 0} approved · {bstat?.rejected ?? 0} rejected</div>
-        </div>
-        <div className="stat lime">
-          <div className="bignum">{util != null ? Math.round(util) : '—'}<span className="unit">%</span></div>
-          <div className="statlabel">Room utilisation</div>
-          <div className="statnote">teaching week, P1–P9</div>
+        <div className="row" style={{ gap: 10, flexWrap: 'wrap' }}>
+          <div className="seg">
+            {['month', 'week', 'day'].map((v) => (
+              <button key={v} className={view === v ? 'on' : ''} onClick={() => setView(v)}>{v[0].toUpperCase() + v.slice(1)}</button>
+            ))}
+          </div>
+          <div className="row" style={{ gap: 6 }}>
+            <button className="btn navb" onClick={() => shift(-1)} title="Previous"><I.Chevron dir="left" size={14} /></button>
+            <button className="btn" onClick={() => { setAnchor(new Date()); if (view === 'day') setSelDay(todayDow === 'SUN' ? 'MON' : todayDow) }}>Today</button>
+            <button className="btn navb" onClick={() => shift(1)} title="Next"><I.Chevron dir="right" size={14} /></button>
+          </div>
+          <button className="btn limeb" onClick={() => setAddOpen(true)}><I.Plus size={14} /> New booking</button>
         </div>
       </div>
 
-      <div className="grid cols-main">
-        <div className="stack">
-          {/* today's tiles */}
-          <div className="card">
-            <div className="hd">
-              <h3>Today on the mosaic</h3>
-              <span className="anno hd-anno">{DAY_FULL[day] || day} · {todays.length} sessions</span>
-              <Link to={`/board?day=${day}`} className="row" style={{ gap: 4 }}>
-                Board <I.ArrowRight size={13} />
-              </Link>
-            </div>
-            {todays.length === 0 ? (
-              <TesseraEmpty title="Nothing scheduled this day" sub="The solver kept this day free." />
-            ) : (
-              <div className="today-tiles">
-                {todays.slice(0, 8).map((p, i) => {
-                  const meta = S.sessMetaOf(p.session_id) || {}
-                  const rm = roomById[p.room]
-                  return (
-                    <Link to={`/board?session=${p.session_id}`} key={p.session_id + i} className="today-tile">
-                      <span className="tt-time mono">{S.periodLabel(p.start)}</span>
-                      <span className="tt-course">{S.courseOf(p.session_id) || p.session_id}</span>
-                      <span className="tt-room">{rm ? rm.id : p.room}{meta.faculty ? ` · ${meta.faculty}` : ''}</span>
-                    </Link>
-                  )
-                })}
-              </div>
-            )}
-            {todays.length > 8 && (
-              <div className="muted small mt">+{todays.length - 8} more on the board</div>
-            )}
+      {view === 'month' ? (
+        <div className="card ovc-mcard">
+          <div className="ovc-mhead">
+            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => <span key={d} className="mono">{d}</span>)}
           </div>
-
-          {/* activity */}
-          <div className="card">
-            <div className="hd">
-              <h3>Activity</h3>
-              <span className="anno hd-anno">audit log · last 14</span>
-              <Link to="/reports" className="row" style={{ gap: 4 }}>All <I.ArrowRight size={13} /></Link>
-            </div>
-            {audit === null ? (
-              <TesseraEmpty title="Loading activity…" />
-            ) : audit.length === 0 ? (
-              <TesseraEmpty title="No activity yet" sub="Actions across TESSERA will appear here." />
-            ) : (
-              <div className="feed">
-                {audit.map((a) => (
-                  <div className="feed-row" key={a.id}>
-                    <span className="feed-ic"><Tessera size={13} mono color="#8d8a80" /></span>
-                    <span className="feed-t">{ACTION_TXT[a.action]?.(a.detail || {}) || a.action}</span>
-                    <span className="feed-who mono">{a.actor}</span>
-                    <span className="feed-at mono">{a.at ? new Date(a.at).toLocaleString([], { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div className="ovc-mgrid">
+            {monthCells(anchor).map((d, i) => {
+              const inMonth = d.getMonth() === anchor.getMonth()
+              const dow = DOW[(d.getDay() + 6) % 7]
+              const n = counts[dow] || 0
+              const isToday = sameDay(d, today)
+              return (
+                <button key={i} className={`ovc-mcell${inMonth ? '' : ' out'}${isToday ? ' today' : ''}${!inMonth ? ' dim' : ''}`}
+                  onClick={() => { if (inMonth) { setSelDay(dow); setAnchor(new Date(d)); setView('day') }}}>
+                  <span className="ovc-mn mono">{d.getDate()}</span>
+                  {inMonth && dow !== 'SAT' && dow !== 'SUN' && n > 0 && (
+                    <span className="ovc-mdots">
+                      <i className="d-lec" /><i className="d-lab" />
+                      <span className="ovc-mcount mono">{n}</span>
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+          <div className="muted small" style={{ marginTop: 12 }}>
+            The generated timetable is a recurring weekly pattern — month cells preview each weekday’s typical load. Click a day for its full schedule.
           </div>
         </div>
-
-        <div className="stack">
-          {/* alerts */}
-          <div className="card">
-            <div className="hd"><h3>Alerts</h3></div>
-            <div className="stack" style={{ gap: 8 }}>
-              {(dash.pending?.bookings || 0) > 0 && (
-                <div className="vres violet"><span className="vi"><I.Bookmark size={14} /></span>
-                  <div><b>{dash.pending.bookings}</b> booking request{(dash.pending.bookings > 1 ? 's' : '')} awaiting a coordinator decision.</div>
-                </div>
-              )}
-              {(dash.pending?.changes || 0) > 0 && (
-                <div className="vres warn"><span className="vi"><I.Shuffle size={14} /></span>
-                  <div><b>{dash.pending.changes}</b> change proposal{(dash.pending.changes > 1 ? 's' : '')} awaiting admin review.</div>
-                </div>
-              )}
-              {(hard || 0) > 0 && (
-                <div className="vres bad"><span className="vi"><I.Alert size={14} /></span>
-                  <div><b>{hard}</b> hard constraint violation{(hard > 1 ? 's' : '')} in the current solution.</div>
-                </div>
-              )}
-              {(soft || 0) > 0 && (
-                <div className="vres info"><span className="vi"><I.Info size={14} /></span>
-                  <div><b>{soft}</b> soft-penalty points remain (preference level, not violations).</div>
-                </div>
-              )}
-              {(dash.pending?.bookings || 0) === 0 && (dash.pending?.changes || 0) === 0 && (hard || 0) === 0 && (
-                <div className="vres ok"><span className="vi"><I.Check size={14} /></span>
-                  <div>Nothing needs attention. The mosaic holds.</div>
-                </div>
-              )}
-            </div>
+      ) : (
+        <div className="card ovc-card" style={{ padding: 0, overflow: 'hidden' }}>
+          {strip}
+          <div className="ovc-scroll" style={{ maxHeight: view === 'day' ? 'calc(100vh - 300px)' : 'calc(100vh - 330px)' }}>
+            {grid(view === 'day' ? [selDay] : DOW, view === 'day' ? 6 : 5, view === 'day')}
           </div>
-
-          {/* featured spaces — editorial */}
-          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-            <div className="hd" style={{ padding: '18px 20px 0' }}>
-              <h3>Featured spaces</h3>
-              <span className="anno hd-anno">from the directory</span>
-              <Link to="/discovery" className="row" style={{ gap: 4 }}>Explore <I.ArrowRight size={13} /></Link>
-            </div>
-            <div className="stack" style={{ padding: 16, gap: 10 }}>
-              {featured.filter(f => f.room).map((f) => (
-                <Link to={`/discovery?room=${f.room.id}`} key={f.room.id} className="feat-mini grain">
-                  <img src={f.img} alt={f.room.name} />
-                  <div className="fm-body">
-                    <div className="fm-tag">{f.tag}</div>
-                    <div className="fm-name">{f.room.name}</div>
-                    <div className="fm-meta mono">{f.room.id} · {f.room.building}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="card grain" style={{ background: 'var(--deep)', borderColor: 'var(--deep)' }}>
-            <div className="hd" style={{ color: '#F1EEE6' }}>
-              <h3 style={{ color: '#F1EEE6' }}>Need a what-if?</h3>
-            </div>
-            <p style={{ color: '#a5a29a', fontSize: 13, margin: '0 0 12px' }}>
-              Ask TESSERA Intelligence to find a free lab, explain a rejection,
-              or preview a session move — every answer links to the exact tile.
-            </p>
-            <Link to="/intelligence" className="btn ai sm"><I.Sparkle size={14} /> Open Intelligence</Link>
+          <div className="ovc-legend">
+            <span className="ovc-lg"><i className="d-lec" /> Lecture</span>
+            <span className="ovc-lg"><i className="d-lab" /> Lab</span>
+            <span className="ovc-lg"><i className="d-bk" /> Reservation</span>
+            <span className="spacer" />
+            <span className="mono" style={{ fontSize: 10, color: 'var(--ink-3)' }}>
+              front-end lane layout · full detail on the <Link to={`/board?day=${view === 'day' ? selDay : todayDow}`}>Mosaic Board</Link>
+            </span>
           </div>
         </div>
-      </div>
+      )}
+
+      {addOpen && (
+        <div className="ovc-add-wrap">
+          <AddBookingCard onClose={() => setAddOpen(false)} onDone={() => { setAddOpen(false); data.reload?.() }} />
+        </div>
+      )}
     </div>
   )
 }
