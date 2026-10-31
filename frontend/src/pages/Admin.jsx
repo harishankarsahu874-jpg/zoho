@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { api, getUser } from '../api.js'
-import { useToast } from '../App.jsx'
+import { Hero, useToast } from '../App.jsx'
 
 export default function Admin() {
   const toast = useToast()
@@ -102,6 +102,9 @@ export default function Admin() {
   }
 
   return (
+    <div>
+      <Hero compact eyebrow="Manage" title="Reports & Export"
+        sub="Run the solver, export the validated schedule.json, swap datasets and read the audit log." />
     <div className="grid cols-2">
       <div className="card">
         <h3>Generate timetable</h3>
@@ -176,6 +179,7 @@ export default function Admin() {
           </table>
         </div>
       </div>
+    </div>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { api, getUser } from '../api.js'
-import { useToast } from '../App.jsx'
+import { Hero, useToast } from '../App.jsx'
 
 const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI']
 
@@ -86,6 +86,8 @@ export default function Changes() {
 
   return (
     <div>
+      <Hero compact eyebrow="Workflow" title="Rescheduling & Disruptions"
+        sub="Natural-language or structured disruption → least-moves proposal → admin approval. Nothing is applied before approval." />
       <div className="grid cols-2 mb">
         <div className="card">
           <h3>✦ Describe the change (English / Hinglish)</h3>

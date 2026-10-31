@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..services import jobs, scheduler_service, state
 from ..validation import checks
-from .deps import require_role
+from .deps import get_current_user, require_role
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -130,7 +130,7 @@ def priority_order(body: PriorityBody, db: Session = Depends(get_db),
 
 @router.get("/audit")
 def audit(limit: int = 100, db: Session = Depends(get_db),
-          user=Depends(require_role("admin"))):
+          user=Depends(get_current_user)):
     from ..models import AuditLog
     rows = db.query(AuditLog).order_by(AuditLog.id.desc()).limit(limit).all()
     return {"entries": [{"id": r.id, "actor": r.actor, "action": r.action,
