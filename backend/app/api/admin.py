@@ -108,7 +108,7 @@ class PriorityBody(BaseModel):
 
 @router.put("/priority-order")
 def priority_order(body: PriorityBody, db: Session = Depends(get_db),
-                   user=Depends(require_role("admin", "department_coordinator"))):
+                   user=Depends(require_role("admin"))):
     base = list(state.get_dataset(db).get("priority_order",
                                           ["exam", "regular_session",
                                            "institute_event", "guest_lecture",

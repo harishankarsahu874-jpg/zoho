@@ -131,6 +131,12 @@ def decide(request_id: str, body: DecideBody, db: Session = Depends(get_db),
         raise HTTPException(404, "unknown booking request")
     if body.status not in ("approved", "rejected", "alternative_offered"):
         raise HTTPException(422, "invalid status")
+    # no self-approval: you cannot decide a request you submitted yourself
+    if request_id.startswith("MB-"):
+        for mb in state.manual_bookings(db):
+            if f"MB-{mb['id']}" == request_id and mb.get("created_by") == user.email:
+                raise HTTPException(403, "you cannot approve or reject your own "
+                                         "request - ask the other coordinator or admin")
 
     if body.status in ("approved", "alternative_offered"):
         sol = state.get_solution(db)

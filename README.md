@@ -34,8 +34,8 @@ Built for the **Crunch Week hackathon**.
 
 ```mermaid
 flowchart TB
-    subgraph FE["Frontend — React (Vite) + Tailwind"]
-        UI["Pages: Dashboard · Timetables · Bookings · Exams · Changes · Admin"]
+    subgraph FE["Frontend — React 18 (Vite)"]
+        UI["Pages: Login · Dashboard · Timetables · Fest Week · Exams · Changes · AI Assistant · Admin"]
     end
 
     subgraph BE["Backend — FastAPI (Python)"]
@@ -81,12 +81,12 @@ flowchart TB
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 18, TypeScript, Vite, Tailwind CSS |
-| Backend | Python 3.10+, FastAPI, Pydantic v2 |
-| Solver | Google OR-Tools (CP-SAT) |
+| Frontend | React 18 (JSX), Vite, react-router, custom CSS design system |
+| Backend | Python 3.10+, FastAPI, Pydantic v2, SQLAlchemy 2 |
+| Solver | Google OR-Tools (CP-SAT) + local-search polish |
 | Database | SQLite (via SQLAlchemy) |
-| Auth | JWT, 4 roles: Admin, Dept Coordinator, Faculty, Club Rep |
-| AI | OpenAI-compatible chat API + in-repo rule-based fallback parser |
+| Auth | JWT (python-jose + bcrypt), 4 roles: Admin, Dept Coordinator, Faculty, Club Rep |
+| AI | OpenAI-compatible chat API (stdlib urllib) + in-repo rule-based fallback parser |
 | Official checker | `validator/validator.py` (starter pack, unmodified) |
 
 Full third-party declarations: [`THIRD_PARTY.md`](THIRD_PARTY.md) · AI use declaration: [`AI_USAGE.md`](AI_USAGE.md)
@@ -114,20 +114,27 @@ zoho/
 ├── backend/
 │   ├── requirements.txt
 │   └── app/
-│       ├── main.py                  # FastAPI entrypoint
-│       ├── config.py / database.py / models.py / schemas.py
+│       ├── main.py                  # FastAPI entrypoint (CORS, routers, startup seed)
+│       ├── config.py / database.py / models.py
 │       ├── data/cit_public.json     # the dataset (read-only source of truth)
-│       ├── dataset/                 # loader, in-memory models, change-file application
-│       ├── solver/                  # timetables.py · exams.py · bookings.py · reoptimize.py
-│       ├── validation/              # constraints.py (hard) · soft_scores.py (S1–S6)
-│       ├── ai/                      # llm_client · prompts/ · parser (fallback) · guardrails
-│       ├── services/                # scheduler · booking · change · demo_reset
-│       └── api/                     # auth · admin · timetable · bookings · exams · changes · ai · dashboard
+│       ├── dataset/                 # loader, Context index views, change-file application
+│       ├── solver/                  # timetable.py (2-phase CP-SAT) · exams.py · bookings.py
+│       │                            #   local_search.py (soft-score polish) · pipeline.py
+│       ├── validation/              # checks.py — wraps the official validator (sole truth)
+│       ├── ai/                      # llm_client (no-key fallback) · parser (booking, Hinglish)
+│       │                            #   change_parser (disruptions) · service (explanations)
+│       ├── services/                # state.py (dataset/solution/reset/audit) · jobs.py
+│       │                            #   scheduler_service.py (generate/rebook/propose/apply)
+│       └── api/                     # auth · timetable · bookings · changes · admin
+│                                    #   dashboard · ai
 └── frontend/
     └── src/
-        ├── api/ auth/ components/   # TimetableGrid · ChangeDiff · AIChatBox …
-        └── pages/                   # Login · Dashboard · Timetables · Bookings
-                                     # NewBooking · Exams · Changes · Admin
+        ├── api.js                   # JWT fetch client
+        ├── App.jsx                  # router, sidebar layout, toasts
+        └── pages/                   # Login · Dashboard · Timetable (week/group/faculty/room)
+                                     #   Bookings (AI draft + form + decisions) · Exams
+                                     #   Changes (NL + structured + diff + approve)
+                                     #   Admin · Assistant
 ```
 
 ---
@@ -212,8 +219,8 @@ See [`.env.example`](.env.example). Summary:
 | `OPENAI_API_KEY` | *optional* | Enables the LLM assistant + plain-language booking parser |
 | `OPENAI_BASE_URL` | *optional* | Use any OpenAI-compatible endpoint |
 | `LLM_MODEL` | *optional* | Model name (default in `.env.example`) |
-| `JWT_SECRET` | yes (set in `.env`) | Token signing |
-| `DATABASE_URL` | no | Defaults to `sqlite:///data/crunchweek.db` |
+| `JWT_SECRET` | yes (set in `.env`) | Token signing (dev default in code) |
+| `DATABASE_URL` | no | Defaults to `sqlite:///<backend>/app/data/crunchweek.db` |
 | `TEAM_NAME` | no | Stamped into exported `schedule.json` |
 | `CORS_ORIGINS` | no | Allowed origins (default: dev origins) |
 
