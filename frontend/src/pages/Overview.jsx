@@ -25,7 +25,7 @@ const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const BANDS = 14
 const BAND_H = 46
 const bandOf = (p) => (p <= 5 ? p - 1 : p)
-const boundHour = (b) => (b <= 4 ? 8 + b : b === 5 ? 13 : 7 + b)
+const boundHour = (b) => 8 + b
 const h12 = (h) => (h === 12 ? '12 pm' : h > 12 ? `${h - 12} pm` : `${h} am`)
 
 // department → tile colour (functional pastels, TESSERA palette family)
@@ -53,7 +53,7 @@ function monthCells(anchor) {
 }
 const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
 
-// greedy interval lanes for one day column
+// greedy interval lanes (used by the wide single-column day view)
 function layOut(items, maxLanes) {
   const laneEnds = []
   const placed = []
@@ -65,15 +65,43 @@ function layOut(items, maxLanes) {
   return placed.map((o) => ({ ...o, overflow: o.lane >= maxLanes }))
 }
 
+// week view: overlapping clusters -> one full-width front block, up to two
+// colour strips peeking from the left, and a "+N more" pill for the rest
+function clusterItems(items) {
+  const out = []
+  let cur = [], curEnd = -1
+  for (const it of items) {
+    if (cur.length && it.start > curEnd) { out.push(cur); cur = []; curEnd = -1 }
+    cur.push(it); curEnd = Math.max(curEnd, it.end)
+  }
+  if (cur.length) out.push(cur)
+  return out
+}
+function stackBlocks(items) {
+  const blocks = [], pills = []
+  for (const cl of clusterItems(items)) {
+    const n = cl.length
+    const order = [...cl].sort((a, b) => (b.end - b.start) - (a.end - a.start) || a.start - b.start)
+    if (n === 1) {
+      blocks.push({ it: order[0], left: 2, width: 'calc(100% - 4px)', z: 3 })
+    } else if (n === 2) {
+      blocks.push({ it: order[0], left: 2, width: 'calc(50% - 3px)', z: 3 })
+      blocks.push({ it: order[1], left: '50%', width: 'calc(50% - 3px)', z: 2 })
+    } else {
+      blocks.push({ it: order[0], left: 2, width: 'calc(100% - 4px)', z: 5 })
+      order.slice(1, 3).forEach((it, i) =>
+        blocks.push({ it, left: 2 - (i + 1) * 14, width: 'calc(100% - 4px)', z: 4 - i }))
+      pills.push({ top: Math.min(...cl.map((x) => x.start)), n: n - 3 })
+    }
+  }
+  return { blocks, pills }
+}
+
 const timeStr = (s, e) => `${S.periodTime(s)[0].slice(0, 5)} – ${S.periodTime(e)[1].slice(0, 5)}`
 
 function DayColumn({ day, items, maxLanes, detailed, onQuickAdd }) {
-  const laid = useMemo(() => layOut(items, maxLanes), [items, maxLanes])
-  const shown = laid.filter((l) => !l.overflow)
-  const lanes = Math.max(1, ...shown.map((l) => l.lane + 1), 0) || 1
-  const w = 100 / lanes
-  const overflows = laid.filter((l) => l.overflow)
-  const pillAt = overflows.length ? bandOf(Math.min(...overflows.map((o) => o.start))) : null
+  const laid = useMemo(() => detailed ? layOut(items, maxLanes) : null, [items, detailed, maxLanes])
+  const stacked = useMemo(() => detailed ? null : stackBlocks(items), [items, detailed])
   const weekend = day === 'SAT' || day === 'SUN'
   const eveningFree = !weekend && !items.some((it) => it.kind === 'booking' && it.start <= 13 && it.end >= 10)
   const saturdayFree = day === 'SAT' && items.length === 0
@@ -81,29 +109,40 @@ function DayColumn({ day, items, maxLanes, detailed, onQuickAdd }) {
   return (
     <div className={`ovc-col${weekend ? ' ovc-we' : ''}`}>
       {eveningFree && (
-        <button className="ovc-plus" style={{ top: 10 * BAND_H + 4, height: 4 * BAND_H - 8 }}
+        <button className="ovc-plus" style={{ top: 10 * BAND_H + 4, height: 4 * BAND_H - 8, left: 6, width: 'calc(100% - 12px)' }}
           onClick={() => onQuickAdd(day, 10)} title={`New booking · ${DOW_FULL[day]} evening`}>
           <I.Plus size={16} />
         </button>
       )}
       {saturdayFree && (
-        <button className="ovc-plus" style={{ top: 4 * BAND_H + 4, height: 4 * BAND_H - 8 }}
+        <button className="ovc-plus" style={{ top: 4 * BAND_H + 4, height: 4 * BAND_H - 8, left: 6, width: 'calc(100% - 12px)' }}
           onClick={() => onQuickAdd('SAT', 6)} title="New booking · Saturday">
-          <span className="ovc-plus-t">New booking</span>
+          <span className="ovc-plus-t">New booking</span><I.Plus size={15} />
         </button>
       )}
-      {overflows.length > 0 && (
-        <Link to={`/board?day=${day}`} className="ovc-more mono" style={{ top: pillAt * BAND_H + 2 }}
-          title={`${overflows.length} more sessions in this slot — open the Mosaic Board`}>
-          +{overflows.length} more
-        </Link>
-      )}
-      {shown.map((it) => {
+      {detailed
+        ? laid.filter((l) => l.overflow).length > 0 && (
+          <Link to={`/board?day=${day}`} className="ovc-more mono" style={{ top: bandOf(Math.min(...laid.filter((l) => l.overflow).map((o) => o.start))) * BAND_H + 2 }}
+            title={`${laid.filter((l) => l.overflow).length} more sessions in this slot — open the Mosaic Board`}>
+            +{laid.filter((l) => l.overflow).length} more
+          </Link>
+        )
+        : stacked.pills.map((p, i) => (
+          <Link key={i} to={`/board?day=${day}`} className="ovc-more mono" style={{ top: bandOf(p.top) * BAND_H + 2, right: 4, left: 'auto' }}
+            title={`${p.n} more sessions in this slot — open the Mosaic Board`}>
+            +{p.n} more
+          </Link>
+        ))}
+      {(detailed ? laid.filter((l) => l.lane < maxLanes) : stacked.blocks).map((entry) => {
+        const it = detailed ? entry : entry.it
         const top = bandOf(it.start) * BAND_H + 2
         const h = (bandOf(it.end) - bandOf(it.start) + 1) * BAND_H - 4
+        const left = detailed ? `${entry.lane * (100 / Math.max(1, ...laid.map((x) => x.lane + 1)))}%` : entry.left
+        const width = detailed ? `calc(${100 / Math.max(1, ...laid.map((x) => x.lane + 1))}% - 3px)` : entry.width
+        const z = detailed ? 2 : entry.z
         if (it.kind === 'booking') {
           return (
-            <Link to="/bookings" key={it.id} className="ovc-blk ovc-bk" style={{ top, height: h, left: `${it.lane * w}%`, width: `calc(${w}% - 3px)` }}
+            <Link to="/bookings" key={it.id} className="ovc-blk ovc-bk" style={{ top, height: h, left, width, zIndex: z }}
               title={`Reservation ${it.rid} · ${it.room}`}>
               <span className="ovc-blk-t">Reservation</span>
               <span className="ovc-blk-tm">{timeStr(it.start, it.end)}</span>
@@ -118,7 +157,7 @@ function DayColumn({ day, items, maxLanes, detailed, onQuickAdd }) {
         const tall = h >= 60
         return (
           <Link to={`/board?session=${it.sid}`} key={it.id} className={`ovc-blk ovc-c-${dk}`}
-            style={{ top, height: h, left: `${it.lane * w}%`, width: `calc(${w}% - 3px)` }}
+            style={{ top, height: h, left, width, zIndex: z }}
             title={`${course} · ${DOW_FULL[it.day]} ${timeStr(it.start, it.end)} · ${it.room}${fac ? ' · ' + fac.name : ''}`}>
             <span className="ovc-blk-t">{course}</span>
             <span className="ovc-blk-tm">{timeStr(it.start, it.end)}{detailed ? ` · P${it.start}–P${it.end}` : ''}</span>
@@ -326,9 +365,9 @@ export default function Overview() {
   )
 
   const grid = (days, maxLanes, detailed) => (
-    <div className="ovc-grid" style={{ gridTemplateColumns: `54px repeat(${days.length}, minmax(0, 1fr))` }}>
+    <div className="ovc-grid" style={{ gridTemplateColumns: `58px repeat(${days.length}, minmax(0, 1fr))` }}>
       <div className="ovc-rail" style={{ height: BANDS * BAND_H }}>
-        {Array.from({ length: BANDS + 1 }, (_, b) => (
+        {Array.from({ length: BANDS }, (_, b) => (
           <span key={b} className="ovc-rail-t" style={{ top: b * BAND_H - 7 }}>{h12(boundHour(b))}</span>
         ))}
       </div>
