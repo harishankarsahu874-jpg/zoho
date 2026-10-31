@@ -1,21 +1,23 @@
-// Tiny API client: JWT in localStorage, JSON in/out, error unwrapping.
-const TOKEN_KEY = 'cw_token'
-const USER_KEY = 'cw_user'
+// Tiny API client: JSON in/out, error unwrapping.
+// The session (JWT + user) is deliberately kept IN MEMORY only, so the
+// login page is always the first screen on a fresh page load — no
+// auto-restore of a previous session.
+let _token = null
+let _user = null
 
 export function getToken() {
-  return localStorage.getItem(TOKEN_KEY) || null
+  return _token
 }
 export function getUser() {
-  const raw = localStorage.getItem(USER_KEY)
-  return raw ? JSON.parse(raw) : null
+  return _user
 }
 export function setSession(token, user) {
-  localStorage.setItem(TOKEN_KEY, token)
-  localStorage.setItem(USER_KEY, JSON.stringify(user))
+  _token = token
+  _user = user
 }
 export function clearSession() {
-  localStorage.removeItem(TOKEN_KEY)
-  localStorage.removeItem(USER_KEY)
+  _token = null
+  _user = null
 }
 
 // The live-preview reverse proxy strips the Authorization header, so the JWT
