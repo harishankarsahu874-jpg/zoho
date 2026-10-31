@@ -1,11 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { api } from '../api.js'
+import { Hero } from '../App.jsx'
 
 const PERIOD_TIME = { 1: '08:00', 2: '09:00', 3: '10:00', 4: '11:00', 5: '12:00',
   6: '13:00', 7: '14:00', 8: '15:00', 9: '16:00', 10: '18:00', 11: '19:00', 12: '20:00', 13: '21:00' }
+const TINTS = ['c0', 'c1', 'c2', 'c3', 'c4']
+const tintOf = (s) => {
+  let h = 0
+  for (const ch of String(s)) h = (h * 31 + ch.charCodeAt(0)) >>> 0
+  return TINTS[h % 5]
+}
+
+const VIEWS = [
+  ['week', 'Whole week'],
+  ['group', 'By group'],
+  ['faculty', 'By faculty'],
+  ['room', 'By room'],
+]
 
 export default function Timetable() {
   const [view, setView] = useState('week')
+  const [sp, setSp] = useSearchParams()
+  const q = (sp.get('q') || '').toLowerCase()
   const [ref, setRef] = useState(null)
   const [id, setId] = useState('')
   const [data, setData] = useState(null)
@@ -40,28 +57,35 @@ export default function Timetable() {
     return s ? s.course : sid
   }
 
+  const rooms = useMemo(() => (ref?.rooms || []).filter((r) => !q || r.id.toLowerCase().includes(q)), [ref, q])
+
   if (err && !data) return <div className="empty"><div className="big">⚠</div>{err}</div>
   if (!data) return <div className="empty"><span className="spin dark" /> Loading…</div>
 
-  const viewBtns = (
+  const tabs = (
     <div className="row mb wrap">
-      {['week', 'group', 'faculty', 'room'].map((v) => (
-        <button key={v} className={`btn sm ${view === v ? 'primary' : ''}`} onClick={() => { setView(v); setId('') }}>
-          {v === 'week' ? 'Whole week (by room)' : v === 'group' ? 'By group' : v === 'faculty' ? 'By faculty' : 'By room'}
+      <div className="seg">
+        {VIEWS.map(([v, label]) => (
+          <button key={v} className={view === v ? 'active' : ''} onClick={() => { setView(v); setId('') }}>
+            {label}
+          </button>
+        ))}
+      </div>
+      {q && (
+        <button className="btn sm" onClick={() => setSp({})}>
+          filter: “{q}” ✕
         </button>
-      ))}
+      )}
       <span className="spacer" />
-      {view === 'week' && <span className="badge muted">teaching = blue · lab = purple · fest booking = amber</span>}
+      {view === 'week' && <span className="badge muted">colours = courses · purple = lab · amber = fest booking</span>}
     </div>
   )
 
   // ---------------- WEEK view (room rows x day cols, Gantt-style slots) ----------------
   if (view === 'week') {
     const days = data.days
-    const SLOT = 30 // px per period slot
-    // teaching sessions: grid repeats each session in every period it
-    // occupies; anchor the chip at its first period (no session at p-1).
-    const sess = {} // room -> day -> startP -> item
+    const SLOT = 30
+    const sess = {}
     for (const [key, items] of Object.entries(data.sessions)) {
       const [day, pstr] = key.split('|P')
       const p = parseInt(pstr, 10)
@@ -73,7 +97,6 @@ export default function Timetable() {
         sess[it.room][day][p] = it
       }
     }
-    // fest bookings grouped by room -> day -> start -> item
     const fest = {}
     for (const [key, list] of Object.entries(data.bookings || {})) {
       const [room, day] = key.split('|')
@@ -85,7 +108,9 @@ export default function Timetable() {
     }
     return (
       <div>
-        {viewBtns}
+        <Hero compact eyebrow="Schedule" title="Timetable"
+          sub="Room-by-room teaching week with fest-week bookings overlaid. Click “why?” on any session for the constraint explanation." />
+        {tabs}
         <div className="card tt-grid">
           <table className="tt-table">
             <thead>
@@ -95,7 +120,7 @@ export default function Timetable() {
               </tr>
             </thead>
             <tbody>
-              {(ref?.rooms || []).map((room) => (
+              {rooms.map((room) => (
                 <tr key={room.id}>
                   <td className="rowhead">
                     {room.id}
@@ -103,12 +128,11 @@ export default function Timetable() {
                   </td>
                   {days.map((day) => (
                     <td key={day} className="tt-cell" style={{ height: 13 * SLOT, width: 118 }}>
-                      {/* period gridlines */}
                       {Array.from({ length: 13 }, (_, i) => (
-                        <div key={i} style={{ position: 'absolute', left: 0, right: 0, top: i * SLOT, height: SLOT, borderBottom: '1px solid #eef0f4', background: i < 9 ? 'transparent' : 'rgba(244,246,251,.6)' }} />
+                        <div key={i} style={{ position: 'absolute', left: 0, right: 0, top: i * SLOT, height: SLOT, borderBottom: '1px solid #eef0f4', background: i < 9 ? 'transparent' : 'rgba(240,242,247,.65)' }} />
                       ))}
                       {Object.entries(sess[room.id]?.[day] || {}).map(([p, it]) => (
-                        <div key={it.sid} className={`tt-chip ${it.kind === 'lab' ? 'lab' : 'lg'}`}
+                        <div key={it.sid} className={`tt-chip ${it.kind === 'lab' ? 'lab' : `teach ${tintOf(courseOf(it.sid))}`}`}
                           style={{ position: 'absolute', left: 3, right: 3, top: (p - 1) * SLOT + 2, height: it.dur * SLOT - 4 }}
                           title={`${courseOf(it.sid)} · ${it.sid} · ${day} P${p}${it.dur > 1 ? `–P${p + it.dur - 1}` : ''} · ${room.id}`}>
                           <span className="ttl">{courseOf(it.sid)}</span>
@@ -128,6 +152,9 @@ export default function Timetable() {
                   ))}
                 </tr>
               ))}
+              {rooms.length === 0 && (
+                <tr><td className="rowhead" colSpan={6}><div className="empty">No rooms match “{q}”.</div></td></tr>
+              )}
             </tbody>
           </table>
           {explanation && <ExplainBox e={explanation} onClose={() => setExplanation(null)} />}
@@ -139,13 +166,17 @@ export default function Timetable() {
   // ---------------- group / faculty / room ----------------
   return (
     <div>
+      <Hero compact eyebrow="Schedule" title="Timetable"
+        sub="Per group, per faculty or per room breakdowns." />
       <div className="row mb wrap">
-        {['week', 'group', 'faculty', 'room'].map((v) => (
-          <button key={v} className={`btn sm ${view === v ? 'primary' : ''}`} onClick={() => { setView(v); setId('') }}>
-            {v === 'week' ? 'Whole week' : v === 'group' ? 'By group' : v === 'faculty' ? 'By faculty' : 'By room'}
-          </button>
-        ))}
-        <select className="input" style={{ width: 260 }} value={id} onChange={(e) => setId(e.target.value)}>
+        <div className="seg">
+          {VIEWS.map(([v, label]) => (
+            <button key={v} className={view === v ? 'active' : ''} onClick={() => { setView(v); setId('') }}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <select className="input" style={{ width: 280 }} value={id} onChange={(e) => setId(e.target.value)}>
           {opts.map((o) => (
             <option key={o} value={o}>
               {view === 'group' ? `${o} — ${ref.groups.find((g) => g.id === o)?.name || ''}` : o}
@@ -197,7 +228,7 @@ export default function Timetable() {
 
 function ExplainBox({ e, onClose }) {
   return (
-    <div className="card mt" style={{ background: 'var(--brand-soft)', borderColor: '#c7d2fe' }}>
+    <div className="card mt" style={{ background: 'var(--brand-soft)', borderColor: '#ddd6fe' }}>
       <div className="row">
         <b>✦ Why {e.kind} {e.id}?</b>
         {e.llm && <span className="badge violet">LLM-assisted</span>}

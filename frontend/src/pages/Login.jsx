@@ -33,10 +33,10 @@ export default function Login({ onLogin }) {
   return (
     <div className="login-wrap">
       <div className="card login-card">
-        <div className="hero">
-          <div className="mark">CW</div>
-          <h2 style={{ fontSize: 20 }}>CrunchWeek</h2>
-          <div className="muted small">CIT campus scheduling &amp; venue management</div>
+        <div className="hero2">
+          <div className="mark">CIT</div>
+          <div className="t">CrunchWeek</div>
+          <div className="s">CIT campus scheduling &amp; venue management</div>
         </div>
         <label className="fld">Email</label>
         <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -50,13 +50,11 @@ export default function Login({ onLogin }) {
           {busy ? <span className="spin" /> : 'Sign in'}
         </button>
         <div className="demo-accounts">
-          <div className="muted small" style={{ marginTop: 4 }}>
-            Demo accounts (one-click):
-          </div>
+          <div className="dtitle">Demo accounts (one-click)</div>
           {DEMO.map((d) => (
             <button key={d.email} disabled={busy} onClick={() => { setEmail(d.email); setPassword(d.password); doLogin(d.email, d.password) }}>
               <span>{d.name}</span>
-              <span className="role mono muted">{d.email}</span>
+              <span className="role">{d.email}</span>
             </button>
           ))}
         </div>

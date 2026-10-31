@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { api, getUser } from '../api.js'
-import { useToast } from '../App.jsx'
+import { Hero, useToast } from '../App.jsx'
 
 export default function Assistant() {
   const toast = useToast()
@@ -51,6 +51,8 @@ export default function Assistant() {
 
   return (
     <div>
+      <Hero compact eyebrow="Assistant" title="AI Assistant"
+        sub="Ask about the timetable, bookings, exams or room usage — or describe a change and I will prepare a proposal for approval." />
       <div className="row mb">
         <span className="badge info">✦ AI Assistant</span>
         {aiStatus && (
