@@ -1,7 +1,7 @@
 """FastAPI auth dependencies (JWT)."""
 from __future__ import annotations
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
@@ -19,13 +19,18 @@ def issue_token(user: User) -> str:
                       s.jwt_secret, algorithm=s.jwt_algorithm)
 
 
-def get_current_user(creds: HTTPAuthorizationCredentials | None = Depends(bearer),
+def get_current_user(request: Request,
+                     creds: HTTPAuthorizationCredentials | None = Depends(bearer),
                      db: Session = Depends(get_db)) -> User:
-    if creds is None:
+    # The live-preview reverse proxy strips the Authorization header, so the
+    # frontend sends the JWT again as a `token` query param (api.js). The
+    # header channel is checked first; the param is the fallback.
+    token = creds.credentials if creds is not None else request.query_params.get("token")
+    if not token:
         raise HTTPException(401, "not authenticated")
     s = get_settings()
     try:
-        payload = jwt.decode(creds.credentials, s.jwt_secret,
+        payload = jwt.decode(token, s.jwt_secret,
                              algorithms=[s.jwt_algorithm])
     except JWTError:
         raise HTTPException(401, "invalid token")

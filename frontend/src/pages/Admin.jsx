@@ -83,11 +83,15 @@ export default function Admin() {
     try {
       const fd = new FormData()
       fd.append('file', f)
-      const res = await fetch('/api/admin/dataset', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${localStorage.getItem('cw_token')}` },
-        body: fd,
-      })
+      const tok = localStorage.getItem('cw_token')
+      // token also in the query: the preview proxy strips the Authorization header
+      const res = await fetch(
+        `/api/admin/dataset${tok ? `?token=${encodeURIComponent(tok)}` : ''}`,
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${tok}` },
+          body: fd,
+        })
       const j = await res.json()
       if (!res.ok) throw new Error(j.detail || `HTTP ${res.status}`)
       toast(`Dataset ${j.dataset_id} loaded (${j.sessions} sessions). Generate a timetable to solve it.`)

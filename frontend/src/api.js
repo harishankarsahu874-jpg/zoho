@@ -18,17 +18,32 @@ export function clearSession() {
   localStorage.removeItem(USER_KEY)
 }
 
+// The live-preview reverse proxy strips the Authorization header, so the JWT
+// also travels as a `token` query param. The backend (app/api/deps.py) checks
+// the header first, then falls back to the param.
+function withToken(path) {
+  const tok = getToken()
+  return tok
+    ? `${path}${path.includes('?') ? '&' : '?'}token=${encodeURIComponent(tok)}`
+    : path
+}
+
 export async function api(path, { method = 'GET', body, raw = false } = {}) {
   const headers = {}
   const tok = getToken()
   if (tok) headers['Authorization'] = `Bearer ${tok}`
   if (body !== undefined) headers['Content-Type'] = 'application/json'
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`/api${withToken(path)}`, {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
   })
   if (!res.ok) {
+    if (res.status === 401) {
+      // Stale/missing token: drop the session so the shell returns to login.
+      clearSession()
+      window.dispatchEvent(new Event('cw:auth-expired'))
+    }
     let detail = null
     try {
       const j = await res.json()
