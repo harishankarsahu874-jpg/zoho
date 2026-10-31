@@ -192,15 +192,25 @@ def _reject_reasons(ctx: Context, req: dict, room_busy: dict, week_grp: dict,
 
 
 def decide_bookings(ctx: Context, week_assign: dict,
-                    time_limit: float = 30.0) -> tuple[dict, dict]:
-    """Return (fest_week_dict, meta) for the given week-7 timetable view."""
+                    time_limit: float = 30.0,
+                    extra_busy: frozenset = frozenset(),
+                    overrides: dict | None = None) -> tuple[dict, dict]:
+    """Return (fest_week_dict, meta) for the given week-7 timetable view.
+
+    extra_busy: (room, day, period) cells already taken by app-level manual
+    bookings - dataset bookings must not overlap them.
+    overrides: {request_id: decision} manual decisions made in the app; they
+    are applied first (in priority order) and the engine never re-decides them.
+    """
     data = ctx.data
     reqs = list(ctx.req.items())
     room_busy = room_busy_of(ctx, week_assign)
+    for cell in extra_busy:
+        room_busy.setdefault(cell, []).append("MANUAL-RESERVED")
     week_grp = checks.grp_occ_of(ctx, week_assign)
 
     decisions: dict[str, dict] = {}
-    overrides: list[dict] = []
+    overrides_out: list[dict] = []
     bookings_busy: dict[tuple, list] = {}  # booking-id occupancy (survives rebuilds)
 
     def place(req: dict, status: str, reason: str, room=None, day=None, a=None, b=None):
@@ -209,7 +219,7 @@ def decide_bookings(ctx: Context, week_assign: dict,
         if room is not None:
             d.update({"day": day, "start_period": a, "end_period": b, "room_id": room})
         decisions[req["id"]] = d
-        if status in ("approved", "alternative_offered"):
+        if status in ("approved", "alternative_offered") and room is not None:
             for p in range(a, b + 1):
                 room_busy.setdefault((room, day, p), []).append(req["id"])
                 bookings_busy.setdefault((room, day, p), []).append(req["id"])
@@ -219,6 +229,26 @@ def decide_bookings(ctx: Context, week_assign: dict,
         room_busy = room_busy_of(ctx, week)
         for cell, ids in bookings_busy.items():
             room_busy.setdefault(cell, []).extend(ids)
+
+    # ---- manual app decisions first (they outrank the engine's opinion) ----
+    if overrides:
+        manual_ranked = sorted(
+            ((rid, ctx.req[rid]) for rid in overrides if rid in ctx.req),
+            key=lambda kv: ctx.booking_rank(kv[1]))
+        for rid, req in manual_ranked:
+            ov = overrides[rid]
+            st = ov.get("status", "rejected")
+            if st in ("approved", "alternative_offered") and ov.get("room_id"):
+                day, a, b = ov["day"], ov["start_period"], ov["end_period"]
+                ok, _blk = _cell_free(ctx, room_busy, week_grp, ov["room_id"],
+                                      day, range(a, b + 1), req)
+                if ok:
+                    place(req, st, ov.get("reason") or "manual decision",
+                          ov["room_id"], day, a, b)
+                    continue
+            place(req, "rejected",
+                  ov.get("reason") or "manual decision (placement not keepable)")
+            reqs = [(r, q) for r, q in reqs if r != rid]
 
     ordered = sorted(reqs, key=lambda kv: ctx.booking_rank(kv[1]))
     institute = [(rid, req) for rid, req in ordered
@@ -293,9 +323,9 @@ def decide_bookings(ctx: Context, week_assign: dict,
                     # commit: rebuild session occupancy, keep booking occupancy
                     rebuild_room_busy(moved_week)
                     for b_sid, (nd, np, nr) in new_slots.items():
-                        overrides.append({"session_id": b_sid, "day": nd,
-                                          "start_period": np, "room_id": nr,
-                                          "displaced_by": req_id})
+                        overrides_out.append({"session_id": b_sid, "day": nd,
+                                              "start_period": np, "room_id": nr,
+                                              "displaced_by": req_id})
                     place(req, "approved",
                           f"Institute event; displaced {len(new_slots)} session(s) to free "
                           f"{rid} {w['day']} P{a}-P{a + dur - 1}.",
@@ -425,8 +455,8 @@ def decide_bookings(ctx: Context, week_assign: dict,
             place(req, "rejected",
                   "Request was cancelled by the requester; it can no longer be approved.")
 
-    fest = {"bookings": [decisions[rid] for rid, _ in reqs],
-            "session_overrides": overrides}
+    fest = {"bookings": [decisions[rid] for rid in ctx.req if rid in decisions],
+            "session_overrides": overrides_out}
     report = checks.booking_report(ctx, week_assign, fest)
     meta = {"stats": report["stats"], "violations": report["violations"],
             "warnings": report["warnings"]}

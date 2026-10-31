@@ -67,3 +67,26 @@ def booking_report(ctx, base_assign: dict, fest: dict) -> dict:
     v = _validator_module()
     viols, warns, stats = v.check_bookings(ctx, base_assign, fest)
     return {"violations": viols, "warnings": warns, "stats": stats}
+
+
+def sessions_week_grid(ctx, assign: dict) -> dict:
+    """{f'{day}|P{p}': [session_id, ...]} teaching grid."""
+    grid: dict[str, list] = {}
+    for sid, (day, start, room) in assign.items():
+        meta = ctx.sessions.get(sid)
+        if meta is None:
+            continue
+        dur = int(meta.get("duration", 1) or 1)
+        for p in range(start, start + dur):
+            grid.setdefault(f"{day}|P{p}", []).append(sid)
+    return grid
+
+
+def room_cells(ctx) -> dict:
+    """All bookable teaching cells (room, day, period) -> None (P1..P9 only)."""
+    cells = {}
+    for rid in ctx.rooms:
+        for day in ctx.days:
+            for p in range(1, 10):
+                cells[(rid, day, p)] = None
+    return cells

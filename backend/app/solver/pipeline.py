@@ -74,15 +74,20 @@ def _reservation_needs(ctx: Context, assign: dict, fest: dict):
     return frozenset(reserve), frozenset(group_free)
 
 
-def _solve_with_reserves(ctx: Context, baseline, time_limit: float):
-    reserve: frozenset = frozenset()
-    group_free: frozenset = frozenset()
+def _solve_with_reserves(ctx: Context, baseline, time_limit: float,
+                         extra_busy: frozenset = frozenset(),
+                         overrides: dict | None = None,
+                         initial_reserve: frozenset = frozenset(),
+                         initial_group_free: frozenset = frozenset()):
+    reserve = frozenset(initial_reserve)
+    group_free = frozenset(initial_group_free)
     assign = fest = None
     for _round in range(3):
         assign, meta = solve_timetable(ctx, reserve, group_free, baseline=baseline,
                                        time_limit=time_limit)
         assign, _soft = polish_timetable(ctx, assign, time_limit=15.0)
-        fest, bmeta = decide_bookings(ctx, assign)
+        fest, bmeta = decide_bookings(ctx, assign, extra_busy=extra_busy,
+                                      overrides=overrides)
         if bmeta["violations"]:
             raise RuntimeError(
                 f"booking layer produced violations: {bmeta['violations'][:5]}")
@@ -111,9 +116,15 @@ def assemble_schedule(data: dict, team: str, assign: dict, fest: dict,
     }
 
 
-def build_schedule(ctx: Context, team: str, time_limit: float = 120.0):
+def build_schedule(ctx: Context, team: str, time_limit: float = 120.0,
+                   extra_busy: frozenset = frozenset(),
+                   overrides: dict | None = None,
+                   initial_reserve: frozenset = frozenset(),
+                   initial_group_free: frozenset = frozenset()):
     """Fresh solve of the whole platform. Returns (schedule_dict, report, meta)."""
-    assign, fest = _solve_with_reserves(ctx, None, time_limit)
+    assign, fest = _solve_with_reserves(
+        ctx, None, time_limit, extra_busy=extra_busy, overrides=overrides,
+        initial_reserve=initial_reserve, initial_group_free=initial_group_free)
     exams = solve_exams(ctx)
     exams, _exam_soft = polish_exams(ctx, exams, time_limit=10.0)
     sched = assemble_schedule(ctx.data, team, assign, fest, exams)
@@ -155,12 +166,19 @@ def explain_conflicts(ctx: Context, dis: dict, time_limit: float = 20.0) -> list
 
 
 def build_schedule_after(ctx: Context, baseline_schedule: dict, team: str,
-                         time_limit: float = 180.0):
+                         time_limit: float = 180.0,
+                         extra_busy: frozenset = frozenset(),
+                         overrides: dict | None = None,
+                         initial_reserve: frozenset = frozenset(),
+                         initial_group_free: frozenset = frozenset()):
     """Least-moves repair of the baseline under the (disrupted) dataset.
     Returns (schedule_dict, report, meta)."""
     baseline = _baseline_assign(baseline_schedule)
     try:
-        assign, fest = _solve_with_reserves(ctx, baseline, time_limit)
+        assign, fest = _solve_with_reserves(
+            ctx, baseline, time_limit, extra_busy=extra_busy,
+            overrides=overrides, initial_reserve=initial_reserve,
+            initial_group_free=initial_group_free)
     except TimetableInfeasible:
         raise
     exams = solve_exams(ctx)

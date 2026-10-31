@@ -4,129 +4,129 @@
   "sessions": [
     {
       "session_id": "CE201-L1",
-      "day": "TUE",
-      "start_period": 8,
-      "room_id": "LH-3"
-    },
-    {
-      "session_id": "CE201-L2",
       "day": "WED",
-      "start_period": 1,
-      "room_id": "LH-5"
-    },
-    {
-      "session_id": "CE201-L3",
-      "day": "MON",
-      "start_period": 6,
-      "room_id": "CR-105"
-    },
-    {
-      "session_id": "CE202-L1",
-      "day": "MON",
       "start_period": 4,
-      "room_id": "LH-3"
-    },
-    {
-      "session_id": "CE202-L2",
-      "day": "FRI",
-      "start_period": 4,
-      "room_id": "LH-3"
-    },
-    {
-      "session_id": "CE202-L3",
-      "day": "TUE",
-      "start_period": 7,
       "room_id": "CR-205"
     },
     {
-      "session_id": "CE202-T1",
-      "day": "MON",
-      "start_period": 8,
-      "room_id": "LH-4"
-    },
-    {
-      "session_id": "CE203-L1",
+      "session_id": "CE201-L2",
       "day": "FRI",
       "start_period": 2,
+      "room_id": "CR-204"
+    },
+    {
+      "session_id": "CE201-L3",
+      "day": "TUE",
+      "start_period": 1,
       "room_id": "LH-3"
     },
     {
-      "session_id": "CE203-L2",
-      "day": "MON",
-      "start_period": 7,
-      "room_id": "CR-105"
-    },
-    {
-      "session_id": "CE203-L3",
+      "session_id": "CE202-L1",
       "day": "THU",
       "start_period": 1,
       "room_id": "LH-6"
     },
     {
+      "session_id": "CE202-L2",
+      "day": "WED",
+      "start_period": 3,
+      "room_id": "LH-6"
+    },
+    {
+      "session_id": "CE202-L3",
+      "day": "TUE",
+      "start_period": 3,
+      "room_id": "CR-104"
+    },
+    {
+      "session_id": "CE202-T1",
+      "day": "MON",
+      "start_period": 2,
+      "room_id": "LH-3"
+    },
+    {
+      "session_id": "CE203-L1",
+      "day": "FRI",
+      "start_period": 3,
+      "room_id": "LH-3"
+    },
+    {
+      "session_id": "CE203-L2",
+      "day": "MON",
+      "start_period": 1,
+      "room_id": "CR-105"
+    },
+    {
+      "session_id": "CE203-L3",
+      "day": "TUE",
+      "start_period": 2,
+      "room_id": "LH-3"
+    },
+    {
       "session_id": "CE204-L1",
+      "day": "MON",
+      "start_period": 4,
+      "room_id": "LH-4"
+    },
+    {
+      "session_id": "CE204-L2",
       "day": "FRI",
       "start_period": 1,
       "room_id": "LH-3"
     },
     {
-      "session_id": "CE204-L2",
-      "day": "TUE",
-      "start_period": 6,
-      "room_id": "CR-205"
-    },
-    {
       "session_id": "CE204-L3",
-      "day": "MON",
-      "start_period": 3,
-      "room_id": "LH-4"
+      "day": "TUE",
+      "start_period": 4,
+      "room_id": "CR-104"
     },
     {
       "session_id": "CE291-P1",
-      "day": "WED",
+      "day": "THU",
       "start_period": 2,
       "room_id": "CIVIL-LAB"
     },
     {
       "session_id": "CE292-P1",
-      "day": "THU",
-      "start_period": 2,
+      "day": "WED",
+      "start_period": 6,
       "room_id": "CIVIL-LAB"
     },
     {
       "session_id": "CE301-L1",
-      "day": "THU",
+      "day": "FRI",
       "start_period": 7,
-      "room_id": "CR-204"
+      "room_id": "CR-101"
     },
     {
       "session_id": "CE301-L2",
       "day": "MON",
-      "start_period": 7,
+      "start_period": 3,
       "room_id": "CR-101"
     },
     {
       "session_id": "CE301-L3",
-      "day": "FRI",
-      "start_period": 8,
+      "day": "WED",
+      "start_period": 3,
       "room_id": "CR-101"
     },
     {
       "session_id": "CE302-L1",
-      "day": "THU",
-      "start_period": 8,
+      "day": "WED",
+      "start_period": 2,
       "room_id": "CR-101"
     },
     {
       "session_id": "CE302-L2",
       "day": "FRI",
-      "start_period": 6,
+      "start_period": 8,
       "room_id": "CR-101"
     },
     {
       "session_id": "CE302-L3",
-      "day": "MON",
-      "start_period": 6,
-      "room_id": "CR-101"
+      "day": "THU",
+      "start_period": 7,
+      "room_id": "CR-105"
     },
     {
       "session_id": "CE303-L1",
@@ -136,8 +136,8 @@
     },
     {
       "session_id": "CE303-L2",
-      "day": "THU",
-      "start_period": 6,
+      "day": "MON",
+      "start_period": 4,
       "room_id": "CR-101"
     },
     {
@@ -154,15 +154,15 @@
     },
     {
       "session_id": "CS101-A-L1",
-      "day": "MON",
-      "start_period": 2,
+      "day": "THU",
+      "start_period": 6,
       "room_id": "LH-1"
     },
     {
       "session_id": "CS101-A-L2",
-      "day": "THU",
-      "start_period": 2,
-      "room_id": "LH-5"
+      "day": "MON",
+      "start_period": 4,
+      "room_id": "LH-6"
     },
     {
       "session_id": "CS101-B-L1",
@@ -173,242 +173,242 @@
     {
       "session_id": "CS101-B-L2",
       "day": "MON",
-      "start_period": 1,
-      "room_id": "LH-2"
+      "start_period": 3,
+      "room_id": "LH-6"
     },
     {
       "session_id": "CS101-C-L1",
-      "day": "TUE",
-      "start_period": 6,
+      "day": "FRI",
+      "start_period": 7,
       "room_id": "LH-2"
     },
     {
       "session_id": "CS101-C-L2",
       "day": "THU",
-      "start_period": 3,
-      "room_id": "LH-3"
+      "start_period": 4,
+      "room_id": "LH-5"
     },
     {
       "session_id": "CS101-D-L1",
-      "day": "TUE",
-      "start_period": 7,
-      "room_id": "LH-1"
+      "day": "WED",
+      "start_period": 2,
+      "room_id": "CR-201"
     },
     {
       "session_id": "CS101-D-L2",
       "day": "MON",
-      "start_period": 8,
-      "room_id": "CR-101"
+      "start_period": 7,
+      "room_id": "LH-1"
     },
     {
       "session_id": "CS191-A-P1",
-      "day": "TUE",
-      "start_period": 6,
+      "day": "THU",
+      "start_period": 2,
       "room_id": "CS-LAB-1"
     },
     {
       "session_id": "CS191-B-P1",
-      "day": "THU",
+      "day": "WED",
       "start_period": 6,
-      "room_id": "CS-LAB-1"
+      "room_id": "CS-LAB-2"
     },
     {
       "session_id": "CS191-C-P1",
-      "day": "WED",
-      "start_period": 6,
+      "day": "FRI",
+      "start_period": 2,
       "room_id": "CS-LAB-1"
     },
     {
       "session_id": "CS191-D-P1",
       "day": "TUE",
       "start_period": 2,
-      "room_id": "CS-LAB-1"
+      "room_id": "CS-LAB-2"
     },
     {
       "session_id": "CS201-L1",
-      "day": "WED",
-      "start_period": 2,
-      "room_id": "CR-103"
+      "day": "FRI",
+      "start_period": 3,
+      "room_id": "CR-101"
     },
     {
       "session_id": "CS201-L2",
-      "day": "TUE",
-      "start_period": 4,
-      "room_id": "CR-201"
+      "day": "THU",
+      "start_period": 8,
+      "room_id": "LH-1"
     },
     {
       "session_id": "CS201-L3",
-      "day": "THU",
-      "start_period": 6,
-      "room_id": "LH-2"
+      "day": "WED",
+      "start_period": 8,
+      "room_id": "LH-1"
     },
     {
       "session_id": "CS202-L1",
-      "day": "TUE",
-      "start_period": 6,
-      "room_id": "CR-103"
+      "day": "FRI",
+      "start_period": 2,
+      "room_id": "LH-5"
     },
     {
       "session_id": "CS202-L2",
       "day": "THU",
-      "start_period": 8,
-      "room_id": "LH-2"
+      "start_period": 4,
+      "room_id": "LH-1"
     },
     {
       "session_id": "CS202-L3",
       "day": "WED",
-      "start_period": 1,
-      "room_id": "CR-104"
+      "start_period": 7,
+      "room_id": "LH-1"
     },
     {
       "session_id": "CS202-T1",
-      "day": "MON",
+      "day": "FRI",
       "start_period": 1,
-      "room_id": "CR-103"
+      "room_id": "LH-6"
     },
     {
       "session_id": "CS202-T2",
       "day": "MON",
-      "start_period": 6,
+      "start_period": 3,
       "room_id": "LH-1"
     },
     {
       "session_id": "CS203-L1",
-      "day": "WED",
-      "start_period": 4,
+      "day": "TUE",
+      "start_period": 6,
       "room_id": "LH-1"
     },
     {
       "session_id": "CS203-L2",
       "day": "FRI",
-      "start_period": 1,
-      "room_id": "CR-101"
+      "start_period": 4,
+      "room_id": "LH-3"
     },
     {
       "session_id": "CS203-L3",
+      "day": "THU",
+      "start_period": 6,
+      "room_id": "CR-103"
+    },
+    {
+      "session_id": "CS204-L1",
       "day": "TUE",
+      "start_period": 1,
+      "room_id": "LH-1"
+    },
+    {
+      "session_id": "CS204-L2",
+      "day": "THU",
       "start_period": 2,
       "room_id": "LH-1"
     },
     {
-      "session_id": "CS204-L1",
-      "day": "THU",
-      "start_period": 7,
-      "room_id": "CR-201"
-    },
-    {
-      "session_id": "CS204-L2",
-      "day": "TUE",
-      "start_period": 3,
-      "room_id": "LH-1"
-    },
-    {
       "session_id": "CS204-L3",
-      "day": "TUE",
+      "day": "THU",
       "start_period": 7,
       "room_id": "CR-103"
     },
     {
       "session_id": "CS291-P1",
-      "day": "MON",
+      "day": "TUE",
       "start_period": 2,
       "room_id": "CS-LAB-1"
     },
     {
       "session_id": "CS292-P1",
-      "day": "FRI",
+      "day": "WED",
       "start_period": 2,
       "room_id": "ELEC-LAB-1"
     },
     {
       "session_id": "CS301-L1",
-      "day": "MON",
+      "day": "TUE",
+      "start_period": 7,
+      "room_id": "CR-201"
+    },
+    {
+      "session_id": "CS301-L2",
+      "day": "FRI",
+      "start_period": 8,
+      "room_id": "LH-5"
+    },
+    {
+      "session_id": "CS301-L3",
+      "day": "THU",
+      "start_period": 2,
+      "room_id": "CR-101"
+    },
+    {
+      "session_id": "CS302-L1",
+      "day": "FRI",
       "start_period": 7,
       "room_id": "LH-6"
     },
     {
-      "session_id": "CS301-L2",
-      "day": "TUE",
-      "start_period": 2,
-      "room_id": "LH-3"
-    },
-    {
-      "session_id": "CS301-L3",
-      "day": "FRI",
-      "start_period": 6,
-      "room_id": "LH-6"
-    },
-    {
-      "session_id": "CS302-L1",
-      "day": "TUE",
-      "start_period": 3,
-      "room_id": "LH-3"
-    },
-    {
       "session_id": "CS302-L2",
-      "day": "MON",
-      "start_period": 6,
-      "room_id": "LH-6"
+      "day": "THU",
+      "start_period": 4,
+      "room_id": "LH-3"
     },
     {
       "session_id": "CS302-L3",
-      "day": "WED",
-      "start_period": 3,
+      "day": "TUE",
+      "start_period": 6,
       "room_id": "CR-201"
     },
     {
       "session_id": "CS303-L1",
+      "day": "THU",
+      "start_period": 3,
+      "room_id": "CR-103"
+    },
+    {
+      "session_id": "CS303-L2",
       "day": "TUE",
+      "start_period": 8,
+      "room_id": "CR-201"
+    },
+    {
+      "session_id": "CS303-L3",
+      "day": "MON",
       "start_period": 1,
       "room_id": "LH-4"
     },
     {
-      "session_id": "CS303-L2",
-      "day": "THU",
-      "start_period": 1,
-      "room_id": "LH-5"
-    },
-    {
-      "session_id": "CS303-L3",
-      "day": "WED",
-      "start_period": 4,
-      "room_id": "LH-3"
-    },
-    {
       "session_id": "CS391-P1",
-      "day": "THU",
-      "start_period": 2,
+      "day": "WED",
+      "start_period": 6,
       "room_id": "CS-LAB-1"
     },
     {
       "session_id": "EC201-L1",
-      "day": "FRI",
-      "start_period": 3,
-      "room_id": "LH-3"
+      "day": "TUE",
+      "start_period": 1,
+      "room_id": "LH-5"
     },
     {
       "session_id": "EC201-L2",
-      "day": "MON",
-      "start_period": 2,
-      "room_id": "CR-103"
+      "day": "FRI",
+      "start_period": 4,
+      "room_id": "CR-105"
     },
     {
       "session_id": "EC201-L3",
-      "day": "THU",
-      "start_period": 1,
+      "day": "WED",
+      "start_period": 3,
       "room_id": "CR-103"
     },
     {
       "session_id": "EC201-T1",
-      "day": "MON",
+      "day": "WED",
       "start_period": 1,
-      "room_id": "CR-105"
+      "room_id": "CR-103"
     },
     {
       "session_id": "EC202-L1",
       "day": "FRI",
-      "start_period": 4,
-      "room_id": "CR-201"
+      "start_period": 2,
+      "room_id": "CR-203"
     },
     {
       "session_id": "EC202-L2",
@@ -418,45 +418,45 @@
     },
     {
       "session_id": "EC202-L3",
-      "day": "MON",
-      "start_period": 3,
-      "room_id": "LH-3"
+      "day": "THU",
+      "start_period": 4,
+      "room_id": "CR-105"
     },
     {
       "session_id": "EC203-L1",
-      "day": "MON",
+      "day": "WED",
       "start_period": 4,
-      "room_id": "LH-5"
+      "room_id": "CR-202"
     },
     {
       "session_id": "EC203-L2",
-      "day": "FRI",
-      "start_period": 2,
-      "room_id": "CR-201"
+      "day": "THU",
+      "start_period": 1,
+      "room_id": "CR-105"
     },
     {
       "session_id": "EC203-L3",
-      "day": "TUE",
-      "start_period": 6,
-      "room_id": "CR-105"
+      "day": "FRI",
+      "start_period": 3,
+      "room_id": "LH-6"
     },
     {
       "session_id": "EC204-L1",
       "day": "FRI",
       "start_period": 1,
-      "room_id": "LH-6"
+      "room_id": "LH-5"
     },
     {
       "session_id": "EC204-L2",
-      "day": "TUE",
+      "day": "WED",
       "start_period": 7,
       "room_id": "CR-105"
     },
     {
       "session_id": "EC204-L3",
-      "day": "WED",
-      "start_period": 4,
-      "room_id": "CR-105"
+      "day": "THU",
+      "start_period": 2,
+      "room_id": "CR-204"
     },
     {
       "session_id": "EC291-P1",
@@ -466,253 +466,253 @@
     },
     {
       "session_id": "EC292-P1",
-      "day": "THU",
-      "start_period": 2,
-      "room_id": "CS-LAB-2"
+      "day": "MON",
+      "start_period": 6,
+      "room_id": "CS-LAB-1"
     },
     {
       "session_id": "EC301-L1",
       "day": "FRI",
-      "start_period": 8,
+      "start_period": 7,
       "room_id": "LH-5"
     },
     {
       "session_id": "EC301-L2",
       "day": "MON",
-      "start_period": 7,
-      "room_id": "LH-5"
-    },
-    {
-      "session_id": "EC301-L3",
-      "day": "TUE",
-      "start_period": 3,
-      "room_id": "CR-204"
-    },
-    {
-      "session_id": "EC302-L1",
-      "day": "TUE",
-      "start_period": 2,
-      "room_id": "CR-204"
-    },
-    {
-      "session_id": "EC302-L2",
-      "day": "THU",
-      "start_period": 1,
+      "start_period": 4,
       "room_id": "LH-3"
     },
     {
-      "session_id": "EC302-L3",
+      "session_id": "EC301-L3",
+      "day": "WED",
+      "start_period": 2,
+      "room_id": "CR-103"
+    },
+    {
+      "session_id": "EC302-L1",
+      "day": "THU",
+      "start_period": 1,
+      "room_id": "LH-5"
+    },
+    {
+      "session_id": "EC302-L2",
       "day": "WED",
       "start_period": 1,
-      "room_id": "LH-4"
+      "room_id": "LH-5"
+    },
+    {
+      "session_id": "EC302-L3",
+      "day": "MON",
+      "start_period": 3,
+      "room_id": "LH-5"
     },
     {
       "session_id": "EC303-L1",
       "day": "MON",
-      "start_period": 6,
-      "room_id": "LH-5"
+      "start_period": 1,
+      "room_id": "LH-3"
     },
     {
       "session_id": "EC303-L2",
-      "day": "TUE",
-      "start_period": 4,
-      "room_id": "CR-204"
+      "day": "WED",
+      "start_period": 3,
+      "room_id": "LH-5"
     },
     {
       "session_id": "EC303-L3",
       "day": "FRI",
-      "start_period": 6,
-      "room_id": "LH-5"
+      "start_period": 8,
+      "room_id": "LH-4"
     },
     {
       "session_id": "EC391-P1",
-      "day": "THU",
+      "day": "TUE",
       "start_period": 2,
       "room_id": "ELEC-LAB-1"
     },
     {
       "session_id": "EE201-L1",
-      "day": "WED",
-      "start_period": 1,
+      "day": "MON",
+      "start_period": 6,
       "room_id": "CR-103"
     },
     {
       "session_id": "EE201-L2",
-      "day": "MON",
-      "start_period": 4,
-      "room_id": "LH-4"
+      "day": "FRI",
+      "start_period": 3,
+      "room_id": "LH-5"
     },
     {
       "session_id": "EE201-L3",
-      "day": "THU",
-      "start_period": 1,
-      "room_id": "CR-101"
+      "day": "TUE",
+      "start_period": 3,
+      "room_id": "LH-3"
     },
     {
       "session_id": "EE201-T1",
       "day": "MON",
-      "start_period": 7,
-      "room_id": "CR-104"
+      "start_period": 4,
+      "room_id": "CR-103"
     },
     {
       "session_id": "EE202-L1",
-      "day": "FRI",
-      "start_period": 4,
-      "room_id": "LH-5"
+      "day": "MON",
+      "start_period": 7,
+      "room_id": "CR-103"
     },
     {
       "session_id": "EE202-L2",
-      "day": "MON",
-      "start_period": 3,
-      "room_id": "LH-5"
+      "day": "FRI",
+      "start_period": 2,
+      "room_id": "LH-4"
     },
     {
       "session_id": "EE202-L3",
       "day": "TUE",
-      "start_period": 2,
-      "room_id": "CR-205"
+      "start_period": 4,
+      "room_id": "LH-3"
     },
     {
       "session_id": "EE203-L1",
-      "day": "MON",
-      "start_period": 6,
+      "day": "THU",
+      "start_period": 1,
       "room_id": "CR-104"
     },
     {
       "session_id": "EE203-L2",
-      "day": "FRI",
+      "day": "MON",
       "start_period": 1,
-      "room_id": "LH-5"
+      "room_id": "CR-204"
     },
     {
       "session_id": "EE203-L3",
       "day": "TUE",
-      "start_period": 3,
-      "room_id": "CR-205"
+      "start_period": 1,
+      "room_id": "LH-4"
     },
     {
       "session_id": "EE204-L1",
-      "day": "FRI",
+      "day": "MON",
       "start_period": 2,
       "room_id": "LH-5"
     },
     {
       "session_id": "EE204-L2",
-      "day": "TUE",
-      "start_period": 4,
-      "room_id": "CR-205"
+      "day": "FRI",
+      "start_period": 1,
+      "room_id": "LH-4"
     },
     {
       "session_id": "EE204-L3",
-      "day": "MON",
-      "start_period": 8,
-      "room_id": "LH-6"
+      "day": "TUE",
+      "start_period": 2,
+      "room_id": "LH-4"
     },
     {
       "session_id": "EE291-P1",
       "day": "THU",
       "start_period": 2,
-      "room_id": "ELEC-LAB-2"
+      "room_id": "ELEC-LAB-1"
     },
     {
       "session_id": "EE292-P1",
       "day": "WED",
-      "start_period": 2,
+      "start_period": 6,
       "room_id": "ELEC-LAB-1"
     },
     {
       "session_id": "EE301-L1",
-      "day": "THU",
+      "day": "WED",
       "start_period": 3,
-      "room_id": "CR-202"
-    },
-    {
-      "session_id": "EE301-L2",
-      "day": "TUE",
-      "start_period": 1,
-      "room_id": "LH-3"
-    },
-    {
-      "session_id": "EE301-L3",
-      "day": "MON",
-      "start_period": 6,
       "room_id": "LH-4"
     },
     {
-      "session_id": "EE302-L1",
+      "session_id": "EE301-L2",
       "day": "MON",
+      "start_period": 1,
+      "room_id": "CR-205"
+    },
+    {
+      "session_id": "EE301-L3",
+      "day": "TUE",
+      "start_period": 7,
+      "room_id": "CR-204"
+    },
+    {
+      "session_id": "EE302-L1",
+      "day": "FRI",
       "start_period": 7,
       "room_id": "LH-4"
     },
     {
       "session_id": "EE302-L2",
-      "day": "THU",
-      "start_period": 4,
-      "room_id": "CR-202"
+      "day": "WED",
+      "start_period": 2,
+      "room_id": "LH-4"
     },
     {
       "session_id": "EE302-L3",
-      "day": "FRI",
-      "start_period": 8,
-      "room_id": "LH-4"
+      "day": "TUE",
+      "start_period": 6,
+      "room_id": "CR-204"
     },
     {
       "session_id": "EE303-L1",
       "day": "FRI",
-      "start_period": 6,
-      "room_id": "LH-4"
+      "start_period": 8,
+      "room_id": "LH-3"
     },
     {
       "session_id": "EE303-L2",
       "day": "WED",
       "start_period": 1,
-      "room_id": "LH-3"
+      "room_id": "LH-4"
     },
     {
       "session_id": "EE303-L3",
-      "day": "THU",
-      "start_period": 2,
-      "room_id": "CR-202"
+      "day": "MON",
+      "start_period": 3,
+      "room_id": "LH-4"
     },
     {
       "session_id": "EE391-P1",
-      "day": "TUE",
-      "start_period": 2,
+      "day": "THU",
+      "start_period": 6,
       "room_id": "ELEC-LAB-1"
     },
     {
       "session_id": "HS101-A-L1",
       "day": "THU",
-      "start_period": 1,
-      "room_id": "CR-201"
+      "start_period": 7,
+      "room_id": "LH-1"
     },
     {
       "session_id": "HS101-A-L2",
-      "day": "MON",
-      "start_period": 4,
+      "day": "WED",
+      "start_period": 2,
       "room_id": "LH-6"
     },
     {
       "session_id": "HS101-B-L1",
-      "day": "WED",
-      "start_period": 2,
-      "room_id": "LH-5"
+      "day": "FRI",
+      "start_period": 7,
+      "room_id": "CR-201"
     },
     {
       "session_id": "HS101-B-L2",
-      "day": "THU",
-      "start_period": 4,
-      "room_id": "LH-1"
-    },
-    {
-      "session_id": "HS101-C-L1",
-      "day": "THU",
+      "day": "TUE",
       "start_period": 2,
       "room_id": "LH-2"
     },
     {
-      "session_id": "HS101-C-L2",
+      "session_id": "HS101-C-L1",
       "day": "FRI",
+      "start_period": 8,
+      "room_id": "LH-6"
+    },
+    {
+      "session_id": "HS101-C-L2",
+      "day": "WED",
       "start_period": 1,
       "room_id": "CR-201"
     },
@@ -720,37 +720,37 @@
       "session_id": "HS101-D-L1",
       "day": "THU",
       "start_period": 3,
-      "room_id": "LH-1"
+      "room_id": "LH-6"
     },
     {
       "session_id": "HS101-D-L2",
       "day": "MON",
       "start_period": 6,
-      "room_id": "CR-201"
+      "room_id": "LH-1"
     },
     {
       "session_id": "HS201-H1-L1",
-      "day": "TUE",
-      "start_period": 8,
-      "room_id": "LH-2"
+      "day": "WED",
+      "start_period": 6,
+      "room_id": "LH-1"
     },
     {
       "session_id": "HS201-H1-L2",
-      "day": "WED",
+      "day": "THU",
       "start_period": 3,
       "room_id": "LH-1"
     },
     {
       "session_id": "HS201-H2-L1",
-      "day": "MON",
-      "start_period": 9,
+      "day": "FRI",
+      "start_period": 4,
       "room_id": "LH-1"
     },
     {
       "session_id": "HS201-H2-L2",
-      "day": "FRI",
+      "day": "MON",
       "start_period": 3,
-      "room_id": "LH-1"
+      "room_id": "LH-2"
     },
     {
       "session_id": "ID101-ALL-L1",
@@ -760,20 +760,20 @@
     },
     {
       "session_id": "MA101-A-T1",
-      "day": "WED",
+      "day": "MON",
       "start_period": 2,
-      "room_id": "LH-6"
+      "room_id": "CR-201"
     },
     {
       "session_id": "MA101-AB-L1",
-      "day": "THU",
-      "start_period": 3,
+      "day": "MON",
+      "start_period": 1,
       "room_id": "LH-2"
     },
     {
       "session_id": "MA101-AB-L2",
-      "day": "MON",
-      "start_period": 3,
+      "day": "FRI",
+      "start_period": 1,
       "room_id": "LH-2"
     },
     {
@@ -784,182 +784,182 @@
     },
     {
       "session_id": "MA101-B-T1",
-      "day": "TUE",
-      "start_period": 2,
-      "room_id": "LH-2"
+      "day": "FRI",
+      "start_period": 6,
+      "room_id": "CR-201"
     },
     {
       "session_id": "MA101-C-T1",
-      "day": "WED",
-      "start_period": 4,
-      "room_id": "LH-4"
+      "day": "THU",
+      "start_period": 3,
+      "room_id": "LH-2"
     },
     {
       "session_id": "MA101-CD-L1",
       "day": "THU",
-      "start_period": 4,
+      "start_period": 2,
       "room_id": "LH-2"
     },
     {
       "session_id": "MA101-CD-L2",
-      "day": "TUE",
-      "start_period": 8,
+      "day": "MON",
+      "start_period": 1,
       "room_id": "LH-1"
     },
     {
       "session_id": "MA101-CD-L3",
       "day": "WED",
-      "start_period": 2,
-      "room_id": "LH-2"
+      "start_period": 4,
+      "room_id": "LH-1"
     },
     {
       "session_id": "MA101-D-T1",
-      "day": "WED",
+      "day": "THU",
       "start_period": 1,
-      "room_id": "LH-2"
+      "room_id": "CR-101"
     },
     {
       "session_id": "ME201-L1",
-      "day": "TUE",
-      "start_period": 4,
-      "room_id": "CR-105"
-    },
-    {
-      "session_id": "ME201-L2",
-      "day": "FRI",
-      "start_period": 1,
-      "room_id": "LH-4"
-    },
-    {
-      "session_id": "ME201-L3",
       "day": "MON",
-      "start_period": 6,
-      "room_id": "CR-103"
-    },
-    {
-      "session_id": "ME202-L1",
-      "day": "FRI",
       "start_period": 4,
-      "room_id": "LH-4"
-    },
-    {
-      "session_id": "ME202-L2",
-      "day": "TUE",
-      "start_period": 3,
-      "room_id": "CR-105"
-    },
-    {
-      "session_id": "ME202-L3",
-      "day": "THU",
-      "start_period": 4,
-      "room_id": "CR-103"
-    },
-    {
-      "session_id": "ME202-T1",
-      "day": "MON",
-      "start_period": 7,
-      "room_id": "CR-103"
-    },
-    {
-      "session_id": "ME203-L1",
-      "day": "THU",
-      "start_period": 2,
-      "room_id": "CR-103"
-    },
-    {
-      "session_id": "ME203-L2",
-      "day": "MON",
-      "start_period": 8,
       "room_id": "LH-5"
     },
     {
-      "session_id": "ME203-L3",
-      "day": "TUE",
-      "start_period": 2,
-      "room_id": "CR-105"
-    },
-    {
-      "session_id": "ME204-L1",
-      "day": "THU",
-      "start_period": 3,
+      "session_id": "ME201-L2",
+      "day": "WED",
+      "start_period": 4,
       "room_id": "CR-103"
     },
     {
-      "session_id": "ME204-L2",
+      "session_id": "ME201-L3",
       "day": "FRI",
-      "start_period": 2,
+      "start_period": 3,
       "room_id": "LH-4"
     },
     {
-      "session_id": "ME204-L3",
+      "session_id": "ME202-L1",
+      "day": "THU",
+      "start_period": 1,
+      "room_id": "CR-103"
+    },
+    {
+      "session_id": "ME202-L2",
+      "day": "FRI",
+      "start_period": 2,
+      "room_id": "LH-3"
+    },
+    {
+      "session_id": "ME202-L3",
       "day": "WED",
       "start_period": 1,
       "room_id": "LH-6"
     },
     {
-      "session_id": "ME291-P1",
-      "day": "THU",
-      "start_period": 6,
-      "room_id": "MECH-WS"
+      "session_id": "ME202-T1",
+      "day": "TUE",
+      "start_period": 8,
+      "room_id": "CR-105"
     },
     {
-      "session_id": "ME292-P1",
+      "session_id": "ME203-L1",
+      "day": "TUE",
+      "start_period": 7,
+      "room_id": "CR-105"
+    },
+    {
+      "session_id": "ME203-L2",
+      "day": "MON",
+      "start_period": 2,
+      "room_id": "LH-4"
+    },
+    {
+      "session_id": "ME203-L3",
       "day": "WED",
+      "start_period": 2,
+      "room_id": "CR-104"
+    },
+    {
+      "session_id": "ME204-L1",
+      "day": "TUE",
+      "start_period": 6,
+      "room_id": "CR-105"
+    },
+    {
+      "session_id": "ME204-L2",
+      "day": "FRI",
+      "start_period": 1,
+      "room_id": "CR-104"
+    },
+    {
+      "session_id": "ME204-L3",
+      "day": "WED",
+      "start_period": 3,
+      "room_id": "CR-104"
+    },
+    {
+      "session_id": "ME291-P1",
+      "day": "THU",
       "start_period": 2,
       "room_id": "MECH-WS"
     },
     {
-      "session_id": "ME301-L1",
-      "day": "THU",
+      "session_id": "ME292-P1",
+      "day": "MON",
       "start_period": 6,
+      "room_id": "MECH-WS"
+    },
+    {
+      "session_id": "ME301-L1",
+      "day": "WED",
+      "start_period": 2,
       "room_id": "LH-3"
     },
     {
       "session_id": "ME301-L2",
-      "day": "WED",
-      "start_period": 4,
-      "room_id": "CR-205"
+      "day": "MON",
+      "start_period": 3,
+      "room_id": "LH-3"
     },
     {
       "session_id": "ME301-L3",
-      "day": "MON",
-      "start_period": 7,
+      "day": "THU",
+      "start_period": 1,
       "room_id": "LH-3"
     },
     {
       "session_id": "ME302-L1",
-      "day": "THU",
-      "start_period": 7,
-      "room_id": "CR-105"
+      "day": "WED",
+      "start_period": 3,
+      "room_id": "LH-3"
     },
     {
       "session_id": "ME302-L2",
-      "day": "WED",
-      "start_period": 3,
+      "day": "THU",
+      "start_period": 2,
       "room_id": "CR-105"
     },
     {
       "session_id": "ME302-L3",
-      "day": "FRI",
-      "start_period": 6,
-      "room_id": "LH-3"
+      "day": "MON",
+      "start_period": 4,
+      "room_id": "CR-104"
     },
     {
       "session_id": "ME303-L1",
-      "day": "FRI",
-      "start_period": 8,
-      "room_id": "LH-3"
+      "day": "MON",
+      "start_period": 1,
+      "room_id": "CR-203"
     },
     {
       "session_id": "ME303-L2",
-      "day": "THU",
-      "start_period": 8,
+      "day": "FRI",
+      "start_period": 7,
       "room_id": "LH-3"
     },
     {
       "session_id": "ME303-L3",
-      "day": "MON",
-      "start_period": 6,
+      "day": "WED",
+      "start_period": 1,
       "room_id": "LH-3"
     },
     {
@@ -970,152 +970,152 @@
     },
     {
       "session_id": "OE301-L1",
-      "day": "WED",
-      "start_period": 2,
-      "room_id": "LH-4"
+      "day": "FRI",
+      "start_period": 6,
+      "room_id": "LH-3"
     },
     {
       "session_id": "OE301-L2",
       "day": "MON",
-      "start_period": 8,
-      "room_id": "LH-3"
-    },
-    {
-      "session_id": "OE301-L3",
-      "day": "FRI",
-      "start_period": 7,
+      "start_period": 2,
       "room_id": "LH-2"
     },
     {
-      "session_id": "OE302-L1",
+      "session_id": "OE301-L3",
       "day": "WED",
-      "start_period": 2,
-      "room_id": "LH-3"
+      "start_period": 4,
+      "room_id": "LH-4"
+    },
+    {
+      "session_id": "OE302-L1",
+      "day": "FRI",
+      "start_period": 6,
+      "room_id": "LH-2"
     },
     {
       "session_id": "OE302-L2",
       "day": "MON",
-      "start_period": 8,
-      "room_id": "LH-2"
+      "start_period": 2,
+      "room_id": "LH-6"
     },
     {
       "session_id": "OE302-L3",
-      "day": "FRI",
-      "start_period": 7,
-      "room_id": "LH-1"
+      "day": "WED",
+      "start_period": 4,
+      "room_id": "LH-3"
     },
     {
       "session_id": "OE303-L1",
-      "day": "WED",
-      "start_period": 2,
+      "day": "FRI",
+      "start_period": 6,
       "room_id": "LH-1"
     },
     {
       "session_id": "OE303-L2",
       "day": "MON",
-      "start_period": 8,
+      "start_period": 2,
       "room_id": "LH-1"
     },
     {
       "session_id": "OE303-L3",
-      "day": "FRI",
-      "start_period": 7,
-      "room_id": "CR-101"
-    },
-    {
-      "session_id": "PH101-A-L1",
       "day": "WED",
-      "start_period": 1,
+      "start_period": 4,
       "room_id": "CR-201"
     },
     {
-      "session_id": "PH101-A-L2",
+      "session_id": "PH101-A-L1",
       "day": "THU",
-      "start_period": 4,
-      "room_id": "LH-6"
+      "start_period": 1,
+      "room_id": "LH-2"
+    },
+    {
+      "session_id": "PH101-A-L2",
+      "day": "MON",
+      "start_period": 3,
+      "room_id": "CR-201"
     },
     {
       "session_id": "PH101-A-L3",
-      "day": "MON",
+      "day": "TUE",
       "start_period": 1,
-      "room_id": "LH-3"
+      "room_id": "LH-2"
     },
     {
       "session_id": "PH101-B-L1",
-      "day": "THU",
-      "start_period": 2,
-      "room_id": "LH-3"
+      "day": "TUE",
+      "start_period": 4,
+      "room_id": "LH-2"
     },
     {
       "session_id": "PH101-B-L2",
       "day": "MON",
       "start_period": 2,
-      "room_id": "LH-3"
+      "room_id": "CR-101"
     },
     {
       "session_id": "PH101-B-L3",
-      "day": "TUE",
-      "start_period": 1,
-      "room_id": "LH-5"
-    },
-    {
-      "session_id": "PH101-C-L1",
-      "day": "TUE",
-      "start_period": 7,
-      "room_id": "LH-2"
-    },
-    {
-      "session_id": "PH101-C-L2",
-      "day": "MON",
-      "start_period": 1,
+      "day": "WED",
+      "start_period": 2,
       "room_id": "LH-1"
     },
     {
-      "session_id": "PH101-C-L3",
-      "day": "THU",
-      "start_period": 1,
-      "room_id": "LH-2"
+      "session_id": "PH101-C-L1",
+      "day": "WED",
+      "start_period": 2,
+      "room_id": "LH-5"
     },
     {
-      "session_id": "PH101-D-L1",
-      "day": "MON",
-      "start_period": 7,
+      "session_id": "PH101-C-L2",
+      "day": "THU",
+      "start_period": 1,
       "room_id": "CR-201"
     },
     {
-      "session_id": "PH101-D-L2",
+      "session_id": "PH101-C-L3",
+      "day": "FRI",
+      "start_period": 6,
+      "room_id": "LH-4"
+    },
+    {
+      "session_id": "PH101-D-L1",
       "day": "THU",
-      "start_period": 2,
+      "start_period": 4,
+      "room_id": "LH-2"
+    },
+    {
+      "session_id": "PH101-D-L2",
+      "day": "WED",
+      "start_period": 1,
       "room_id": "LH-1"
     },
     {
       "session_id": "PH101-D-L3",
       "day": "TUE",
-      "start_period": 6,
-      "room_id": "LH-1"
+      "start_period": 1,
+      "room_id": "LH-6"
     },
     {
       "session_id": "PH191-A-P1",
-      "day": "FRI",
-      "start_period": 6,
-      "room_id": "PHY-LAB"
-    },
-    {
-      "session_id": "PH191-B-P1",
-      "day": "WED",
-      "start_period": 6,
-      "room_id": "PHY-LAB"
-    },
-    {
-      "session_id": "PH191-C-P1",
       "day": "FRI",
       "start_period": 2,
       "room_id": "PHY-LAB"
     },
     {
-      "session_id": "PH191-D-P1",
+      "session_id": "PH191-B-P1",
       "day": "THU",
       "start_period": 6,
+      "room_id": "PHY-LAB"
+    },
+    {
+      "session_id": "PH191-C-P1",
+      "day": "TUE",
+      "start_period": 6,
+      "room_id": "PHY-LAB"
+    },
+    {
+      "session_id": "PH191-D-P1",
+      "day": "MON",
+      "start_period": 2,
       "room_id": "PHY-LAB"
     },
     {
@@ -1127,7 +1127,7 @@
     {
       "session_id": "WS101-B-P1",
       "day": "FRI",
-      "start_period": 6,
+      "start_period": 2,
       "room_id": "MECH-WS"
     },
     {
@@ -1139,7 +1139,7 @@
     {
       "session_id": "WS101-D-P1",
       "day": "FRI",
-      "start_period": 2,
+      "start_period": 6,
       "room_id": "MECH-WS"
     }
   ],
@@ -1157,8 +1157,8 @@
       {
         "request_id": "BR-02",
         "status": "approved",
-        "reason": "club_event; CS-LAB-1 free FRI P6-P11 (priority-ordered allocation).",
-        "day": "FRI",
+        "reason": "club_event; CS-LAB-1 free THU P6-P11 (priority-ordered allocation).",
+        "day": "THU",
         "start_period": 6,
         "end_period": 11,
         "room_id": "CS-LAB-1"
@@ -1372,8 +1372,8 @@
       "session": "PM",
       "rooms": [
         "AUD",
-        "LH-1",
-        "CR-203"
+        "LH-2",
+        "SH-2"
       ]
     },
     {
@@ -1382,8 +1382,8 @@
       "session": "AM",
       "rooms": [
         "AUD",
-        "LH-1",
-        "LH-2"
+        "LH-2",
+        "CR-204"
       ]
     },
     {
@@ -1393,7 +1393,7 @@
       "rooms": [
         "AUD",
         "LH-1",
-        "LH-2"
+        "CR-101"
       ]
     },
     {
@@ -1402,8 +1402,8 @@
       "session": "AM",
       "rooms": [
         "AUD",
-        "LH-1",
-        "LH-2"
+        "LH-2",
+        "CR-101"
       ]
     },
     {
@@ -1411,7 +1411,7 @@
       "day": "TUE",
       "session": "AM",
       "rooms": [
-        "LH-1"
+        "AUD"
       ]
     },
     {
@@ -1427,8 +1427,7 @@
       "day": "WED",
       "session": "AM",
       "rooms": [
-        "SH-1",
-        "LH-5"
+        "LH-1"
       ]
     },
     {
@@ -1444,7 +1443,7 @@
       "day": "FRI",
       "session": "PM",
       "rooms": [
-        "LH-2"
+        "LH-1"
       ]
     },
     {
@@ -1460,7 +1459,7 @@
       "day": "THU",
       "session": "AM",
       "rooms": [
-        "LH-1"
+        "AUD"
       ]
     },
     {
@@ -1484,7 +1483,7 @@
       "day": "THU",
       "session": "AM",
       "rooms": [
-        "AUD"
+        "LH-1"
       ]
     },
     {
@@ -1540,7 +1539,7 @@
       "day": "FRI",
       "session": "PM",
       "rooms": [
-        "SH-2"
+        "SH-1"
       ]
     },
     {
@@ -1556,7 +1555,7 @@
       "day": "TUE",
       "session": "AM",
       "rooms": [
-        "LH-5"
+        "LH-6"
       ]
     },
     {
@@ -1564,7 +1563,7 @@
       "day": "SAT",
       "session": "AM",
       "rooms": [
-        "LH-4"
+        "LH-3"
       ]
     },
     {
@@ -1621,7 +1620,7 @@
       "day": "TUE",
       "session": "PM",
       "rooms": [
-        "SH-1"
+        "LH-2"
       ]
     },
     {
@@ -1669,7 +1668,7 @@
       "day": "FRI",
       "session": "AM",
       "rooms": [
-        "LH-4"
+        "SH-1"
       ]
     },
     {
@@ -1677,7 +1676,7 @@
       "day": "MON",
       "session": "PM",
       "rooms": [
-        "CR-101"
+        "CR-102"
       ]
     },
     {
@@ -1685,7 +1684,7 @@
       "day": "TUE",
       "session": "AM",
       "rooms": [
-        "AUD"
+        "LH-1"
       ]
     },
     {
