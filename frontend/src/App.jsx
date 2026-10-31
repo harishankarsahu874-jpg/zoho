@@ -108,6 +108,13 @@ function Shell({ children, user }) {
 
 export default function App() {
   const [user, setUser] = useState(getUser())
+  useEffect(() => {
+    // The api client fires this when a request comes back 401 (stale token):
+    // clearing `user` drops the shell back onto the login route.
+    const onExpired = () => setUser(null)
+    window.addEventListener('cw:auth-expired', onExpired)
+    return () => window.removeEventListener('cw:auth-expired', onExpired)
+  }, [])
   if (!user) {
     return (
       <Routes>
