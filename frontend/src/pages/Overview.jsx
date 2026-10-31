@@ -373,8 +373,8 @@ export default function Overview() {
         </div>
       ) : (
         <div className="card ovc-card" style={{ padding: 0, overflow: 'hidden' }}>
-          {strip}
           <div className="ovc-scroll" style={{ maxHeight: view === 'day' ? 'calc(100vh - 300px)' : 'calc(100vh - 330px)' }}>
+            {strip}
             {grid(view === 'day' ? [selDay] : DOW, view === 'day' ? 6 : 5, view === 'day')}
           </div>
           <div className="ovc-legend">
